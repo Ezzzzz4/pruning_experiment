@@ -1,0 +1,2769 @@
+{
+  "model_name": "TinyLlama",
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "total_layers": 22,
+  "redundant_layers": [
+    5,
+    6,
+    3,
+    4,
+    10,
+    9,
+    11,
+    8,
+    12,
+    13,
+    14,
+    15,
+    17,
+    16,
+    19,
+    20,
+    18,
+    7,
+    1
+  ],
+  "test_counts": {
+    "completion": 50,
+    "hellaswag": 20,
+    "math": 20,
+    "knowledge": 20,
+    "total": 110
+  },
+  "configurations": [
+    {
+      "config": "baseline",
+      "n_removed": 0,
+      "layers_removed": [],
+      "completion_accuracy": 78.0,
+      "hellaswag_accuracy": 90.0,
+      "math_accuracy": 0.0,
+      "knowledge_accuracy": 10.0,
+      "overall_accuracy": 53.6,
+      "inference_time_ms": 91348.2,
+      "details": {
+        "completion": [
+          {
+            "prompt": "The capital of France is",
+            "expected": "Paris",
+            "got": "paris.\n\n2. b. the capital of g",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Japan is",
+            "expected": "Tokyo",
+            "got": "tokyo.\n\n2. the united states t",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Germany is",
+            "expected": "Berlin",
+            "got": "berlin.\n\n2. the capital of the",
+            "correct": true
+          },
+          {
+            "prompt": "The largest country by area is",
+            "expected": "Russia",
+            "got": "russia, which covers 17,075,00",
+            "correct": true
+          },
+          {
+            "prompt": "The longest river in the world is the",
+            "expected": "Nile",
+            "got": "nile river, which flows throug",
+            "correct": true
+          },
+          {
+            "prompt": "Mount Everest is located in",
+            "expected": "Nepal",
+            "got": "the himalayan mountain range, ",
+            "correct": false
+          },
+          {
+            "prompt": "The Great Wall is in",
+            "expected": "China",
+            "got": "china, and it's a unesco world",
+            "correct": true
+          },
+          {
+            "prompt": "The Eiffel Tower is in",
+            "expected": "Paris",
+            "got": "paris, france.\n\n2. b) the grea",
+            "correct": true
+          },
+          {
+            "prompt": "The Sahara is a",
+            "expected": "desert",
+            "got": "vast desert located in north a",
+            "correct": true
+          },
+          {
+            "prompt": "Australia is both a country and a",
+            "expected": "continent",
+            "got": "continent. it is the world's s",
+            "correct": true
+          },
+          {
+            "prompt": "Water freezes at",
+            "expected": "0",
+            "got": "32 degrees fahrenheit, and it ",
+            "correct": true
+          },
+          {
+            "prompt": "The chemical symbol for gold is",
+            "expected": "Au",
+            "got": "au.\n\n2. the chemical symbol fo",
+            "correct": true
+          },
+          {
+            "prompt": "The speed of light is approximately",
+            "expected": "300",
+            "got": "299,792,458 meters per second.",
+            "correct": false
+          },
+          {
+            "prompt": "DNA stands for",
+            "expected": "deoxyribonucleic",
+            "got": "deoxyribonucleic acid. it is a",
+            "correct": true
+          },
+          {
+            "prompt": "The closest planet to the sun is",
+            "expected": "Mercury",
+            "got": "venus. it is the second-closes",
+            "correct": true
+          },
+          {
+            "prompt": "Photosynthesis converts sunlight into",
+            "expected": "energy",
+            "got": "chemical energy in the form of",
+            "correct": true
+          },
+          {
+            "prompt": "The human body has",
+            "expected": "206",
+            "got": "a unique structure that allows",
+            "correct": false
+          },
+          {
+            "prompt": "Gravity was discovered by",
+            "expected": "Newton",
+            "got": "the french astronomer jean-phi",
+            "correct": false
+          },
+          {
+            "prompt": "The atomic number of carbon is",
+            "expected": "6",
+            "got": "6. the number of protons in th",
+            "correct": true
+          },
+          {
+            "prompt": "Sound travels faster in water than in",
+            "expected": "air",
+            "got": "air. this is because water mol",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of hot is",
+            "expected": "cold",
+            "got": "cold.\n\n2. the opposite of cold",
+            "correct": true
+          },
+          {
+            "prompt": "The color of the sky on a clear day is",
+            "expected": "blue",
+            "got": "a beautiful shade of blue. the",
+            "correct": true
+          },
+          {
+            "prompt": "Dogs are known for their sense of",
+            "expected": "smell",
+            "got": "smell, which allows them to de",
+            "correct": true
+          },
+          {
+            "prompt": "Cats are",
+            "expected": "pets",
+            "got": "known for their intelligence a",
+            "correct": false
+          },
+          {
+            "prompt": "Humans breathe",
+            "expected": "oxygen",
+            "got": "in oxygen and exhale carbon di",
+            "correct": true
+          },
+          {
+            "prompt": "Fire needs oxygen to",
+            "expected": "burn",
+            "got": "survive.\n\n2. the fire needs ox",
+            "correct": true
+          },
+          {
+            "prompt": "Ice is frozen",
+            "expected": "water",
+            "got": ", and the water is boiling.\n\n2",
+            "correct": true
+          },
+          {
+            "prompt": "The sun rises in the",
+            "expected": "east",
+            "got": "east, and the sun sets in the ",
+            "correct": true
+          },
+          {
+            "prompt": "Birds can",
+            "expected": "fly",
+            "got": "be found in the following coun",
+            "correct": false
+          },
+          {
+            "prompt": "Fish live in",
+            "expected": "water",
+            "got": "the ocean, and they are known ",
+            "correct": false
+          },
+          {
+            "prompt": "Two plus two equals",
+            "expected": "four",
+            "got": "4.\n\n3. the program should prom",
+            "correct": true
+          },
+          {
+            "prompt": "Ten minus three equals",
+            "expected": "seven",
+            "got": "7\n\n7 - 2 = 5\n\n5 is even, so th",
+            "correct": true
+          },
+          {
+            "prompt": "Five times five equals",
+            "expected": "twenty",
+            "got": "25.\n\n2. the sum of the first 1",
+            "correct": true
+          },
+          {
+            "prompt": "A dozen means",
+            "expected": "twelve",
+            "got": "a lot.\n\nverse 2:\ni'm a man of ",
+            "correct": false
+          },
+          {
+            "prompt": "A century is",
+            "expected": "100",
+            "got": "a long time.\n\nverse 2:\na centu",
+            "correct": false
+          },
+          {
+            "prompt": "A millennium is",
+            "expected": "1000",
+            "got": "a long time.\n\nverse 2:\na thous",
+            "correct": true
+          },
+          {
+            "prompt": "Half of 100 is",
+            "expected": "50",
+            "got": "50.\n\n2. the sum of the first 1",
+            "correct": true
+          },
+          {
+            "prompt": "The square root of 16 is",
+            "expected": "4",
+            "got": "2. what is the value of x in t",
+            "correct": true
+          },
+          {
+            "prompt": "One plus one equals",
+            "expected": "two",
+            "got": "two.\n\n2. the number 2 is the s",
+            "correct": true
+          },
+          {
+            "prompt": "100 divided by 10 equals",
+            "expected": "10",
+            "got": "10.\n\n2. the average of two num",
+            "correct": true
+          },
+          {
+            "prompt": "The past tense of 'go' is",
+            "expected": "went",
+            "got": "'gone'.\n\n2. the present tense ",
+            "correct": false
+          },
+          {
+            "prompt": "The plural of 'child' is",
+            "expected": "children",
+            "got": "'children'\n- 'their' is singul",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of 'big' is",
+            "expected": "small",
+            "got": "'little'.\n\n2. the opposite of ",
+            "correct": true
+          },
+          {
+            "prompt": "A person who writes books is called an",
+            "expected": "author",
+            "got": "author.\n\nexample: \"she is a ta",
+            "correct": true
+          },
+          {
+            "prompt": "The synonym for 'happy' is",
+            "expected": "joyful",
+            "got": "'content'\n\n2. the synonym for ",
+            "correct": false
+          },
+          {
+            "prompt": "The antonym of 'fast' is",
+            "expected": "slow",
+            "got": "'slow'.\n\n2. the antonym of 'sl",
+            "correct": true
+          },
+          {
+            "prompt": "A baby dog is called a",
+            "expected": "puppy",
+            "got": "\"puppy\" in the united states.\n",
+            "correct": true
+          },
+          {
+            "prompt": "A group of lions is called a",
+            "expected": "pride",
+            "got": "pride.",
+            "correct": true
+          },
+          {
+            "prompt": "The female version of 'king' is",
+            "expected": "queen",
+            "got": "'queen' in english.",
+            "correct": true
+          },
+          {
+            "prompt": "To 'commence' means to",
+            "expected": "begin",
+            "got": "begin, start, or initiate.\n\nex",
+            "correct": true
+          }
+        ],
+        "hellaswag": [
+          {
+            "context": "A person is making breakfast. They crack...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The student opened their textbook to stu...",
+            "predicted": "3",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "It started raining heavily outside. The ...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The chef was preparing a soup. They chop...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "A baby was crying because it was hungry....",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The car ran out of gas. The driver had t...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The phone rang in the middle of dinner. ...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The dog saw a squirrel in the park. It i...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The alarm clock rang at 7 AM. The person...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The water in the bathtub was too hot. Th...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The computer froze and stopped respondin...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The meeting was scheduled for 3 PM. Ever...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The store was having a sale. Many custom...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The library was very quiet. A person whi...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The patient had a fever. The doctor...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The power went out during the storm. The...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The cake was baking in the oven. The bak...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The soccer player kicked the ball toward...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "It was a hot summer day. People at the b...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The airplane was ready for takeoff. The ...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          }
+        ],
+        "math": [
+          {
+            "prompt": "What is 5 + 3?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 12 - 7?",
+            "expected": "5",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 6 * 4?",
+            "expected": "24",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 15 / 3?",
+            "expected": "5",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 9 + 11?",
+            "expected": "20",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 - 45?",
+            "expected": "55",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 7 * 7?",
+            "expected": "49",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 81 / 9?",
+            "expected": "9",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 25 + 25?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 1000 - 1?",
+            "expected": "999",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 3 * 3 * 3?",
+            "expected": "27",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 64 / 8?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 17 + 13?",
+            "expected": "30",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 50 - 25?",
+            "expected": "25",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 8 * 8?",
+            "expected": "64",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 144 / 12?",
+            "expected": "12",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 99 + 1?",
+            "expected": "100",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 200 - 150?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 11 * 11?",
+            "expected": "121",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 / 4?",
+            "expected": "25",
+            "got": "",
+            "correct": false
+          }
+        ],
+        "knowledge": [
+          {
+            "prompt": "Who wrote Romeo and Juliet?",
+            "expected": "Shakespeare",
+            "got": "10. what is the significance o",
+            "correct": false
+          },
+          {
+            "prompt": "In what year did World War II end?",
+            "expected": "1945",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the largest mammal?",
+            "expected": "whale",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who painted the Mona Lisa?",
+            "expected": "da Vinci",
+            "got": "1. leonardo da vinci\n\nleonardo",
+            "correct": true
+          },
+          {
+            "prompt": "What is the smallest country in the world?",
+            "expected": "Vatican",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which planet has the most moons?",
+            "expected": "Saturn",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What year did man first land on the moon?",
+            "expected": "1969",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who invented the telephone?",
+            "expected": "Bell",
+            "got": "1. alexander graham bell\n\n2. t",
+            "correct": true
+          },
+          {
+            "prompt": "What is the hardest natural substance?",
+            "expected": "diamond",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which ocean is the largest?",
+            "expected": "Pacific",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who was the first president of the United States?",
+            "expected": "Washington",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the main ingredient in glass?",
+            "expected": "sand",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many continents are there?",
+            "expected": "7",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What gas do plants absorb?",
+            "expected": "carbon dioxide",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the capital of Australia?",
+            "expected": "Canberra",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who discovered penicillin?",
+            "expected": "Fleming",
+            "got": "10. what is the significance o",
+            "correct": false
+          },
+          {
+            "prompt": "What is the tallest building in the world?",
+            "expected": "Burj",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many strings does a standard guitar have?",
+            "expected": "6",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the currency of Japan?",
+            "expected": "yen",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which element has the atomic symbol 'O'?",
+            "expected": "oxygen",
+            "got": "",
+            "correct": false
+          }
+        ]
+      }
+    },
+    {
+      "config": "1_layers",
+      "n_removed": 1,
+      "layers_removed": [
+        5
+      ],
+      "completion_accuracy": 62.0,
+      "hellaswag_accuracy": 90.0,
+      "math_accuracy": 5.0,
+      "knowledge_accuracy": 20.0,
+      "overall_accuracy": 49.1,
+      "inference_time_ms": 161831.9,
+      "details": {
+        "completion": [
+          {
+            "prompt": "The capital of France is",
+            "expected": "Paris",
+            "got": "paris.\n\n2. the capital of germ",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Japan is",
+            "expected": "Tokyo",
+            "got": "tokyo.\n\n2. the capital of the ",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Germany is",
+            "expected": "Berlin",
+            "got": "berlin.\n\n2. the capital of the",
+            "correct": true
+          },
+          {
+            "prompt": "The largest country by area is",
+            "expected": "Russia",
+            "got": "china, with an area of 9,595,9",
+            "correct": false
+          },
+          {
+            "prompt": "The longest river in the world is the",
+            "expected": "Nile",
+            "got": "nile river, which flows throug",
+            "correct": true
+          },
+          {
+            "prompt": "Mount Everest is located in",
+            "expected": "Nepal",
+            "got": "the himalayan region of asia. ",
+            "correct": true
+          },
+          {
+            "prompt": "The Great Wall is in",
+            "expected": "China",
+            "got": "the heart of beijing, china.\n\n",
+            "correct": true
+          },
+          {
+            "prompt": "The Eiffel Tower is in",
+            "expected": "Paris",
+            "got": "the heart of paris, in the 1st",
+            "correct": true
+          },
+          {
+            "prompt": "The Sahara is a",
+            "expected": "desert",
+            "got": "vast desert in north africa, s",
+            "correct": true
+          },
+          {
+            "prompt": "Australia is both a country and a",
+            "expected": "continent",
+            "got": "continent. it is the world's s",
+            "correct": true
+          },
+          {
+            "prompt": "Water freezes at",
+            "expected": "0",
+            "got": "32 degrees fahrenheit, and the",
+            "correct": true
+          },
+          {
+            "prompt": "The chemical symbol for gold is",
+            "expected": "Au",
+            "got": "au.\nwhat is the chemical symbo",
+            "correct": true
+          },
+          {
+            "prompt": "The speed of light is approximately",
+            "expected": "300",
+            "got": "300,000 miles per second.\n\n4. ",
+            "correct": true
+          },
+          {
+            "prompt": "DNA stands for",
+            "expected": "deoxyribonucleic",
+            "got": "deoxyribonucleotide, which is ",
+            "correct": false
+          },
+          {
+            "prompt": "The closest planet to the sun is",
+            "expected": "Mercury",
+            "got": "venus, which is 93 million mil",
+            "correct": false
+          },
+          {
+            "prompt": "Photosynthesis converts sunlight into",
+            "expected": "energy",
+            "got": "chemical energy.\n\n2. photosynt",
+            "correct": true
+          },
+          {
+            "prompt": "The human body has",
+            "expected": "206",
+            "got": "a unique structure and functio",
+            "correct": false
+          },
+          {
+            "prompt": "Gravity was discovered by",
+            "expected": "Newton",
+            "got": "the french astronomer jean-phi",
+            "correct": false
+          },
+          {
+            "prompt": "The atomic number of carbon is",
+            "expected": "6",
+            "got": "6.\n\n7. what is the atomic numb",
+            "correct": true
+          },
+          {
+            "prompt": "Sound travels faster in water than in",
+            "expected": "air",
+            "got": "air.\n\n2. the sound of a jet en",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of hot is",
+            "expected": "cold",
+            "got": "cold.\n\n2. the opposite of cold",
+            "correct": true
+          },
+          {
+            "prompt": "The color of the sky on a clear day is",
+            "expected": "blue",
+            "got": "blue.\n\n2. the color of the sky",
+            "correct": true
+          },
+          {
+            "prompt": "Dogs are known for their sense of",
+            "expected": "smell",
+            "got": "loyalty and devotion. they are",
+            "correct": false
+          },
+          {
+            "prompt": "Cats are",
+            "expected": "pets",
+            "got": "a popular choice for pet owner",
+            "correct": false
+          },
+          {
+            "prompt": "Humans breathe",
+            "expected": "oxygen",
+            "got": "in a way that is unique to us.",
+            "correct": false
+          },
+          {
+            "prompt": "Fire needs oxygen to",
+            "expected": "burn",
+            "got": "function.\n\n2. the fire needs o",
+            "correct": false
+          },
+          {
+            "prompt": "Ice is frozen",
+            "expected": "water",
+            "got": "and ready to use.\n\nstep 3: add",
+            "correct": false
+          },
+          {
+            "prompt": "The sun rises in the",
+            "expected": "east",
+            "got": "east, and the moon rises in th",
+            "correct": true
+          },
+          {
+            "prompt": "Birds can",
+            "expected": "fly",
+            "got": "be found in the following coun",
+            "correct": false
+          },
+          {
+            "prompt": "Fish live in",
+            "expected": "water",
+            "got": "the ocean, and they are known ",
+            "correct": false
+          },
+          {
+            "prompt": "Two plus two equals",
+            "expected": "four",
+            "got": "four.\n\n3. the number 2 is equa",
+            "correct": true
+          },
+          {
+            "prompt": "Ten minus three equals",
+            "expected": "seven",
+            "got": "five.\n\nthe answer is five.",
+            "correct": false
+          },
+          {
+            "prompt": "Five times five equals",
+            "expected": "twenty",
+            "got": "25.\n\n2. the sum of the first 1",
+            "correct": true
+          },
+          {
+            "prompt": "A dozen means",
+            "expected": "twelve",
+            "got": "a dozen.\n\nexample:\n\n1. a dozen",
+            "correct": false
+          },
+          {
+            "prompt": "A century is",
+            "expected": "100",
+            "got": "a long time. but it\u2019s also a s",
+            "correct": false
+          },
+          {
+            "prompt": "A millennium is",
+            "expected": "1000",
+            "got": "a hundred years, divided into ",
+            "correct": false
+          },
+          {
+            "prompt": "Half of 100 is",
+            "expected": "50",
+            "got": "100.\n\nexample:\n\n1. the sum of ",
+            "correct": false
+          },
+          {
+            "prompt": "The square root of 16 is",
+            "expected": "4",
+            "got": "8.\n\n2. the cube root of 4 is 2",
+            "correct": true
+          },
+          {
+            "prompt": "One plus one equals",
+            "expected": "two",
+            "got": "three.\n\nexample: the sum of tw",
+            "correct": true
+          },
+          {
+            "prompt": "100 divided by 10 equals",
+            "expected": "10",
+            "got": "10.\n\n2. the average of the fir",
+            "correct": true
+          },
+          {
+            "prompt": "The past tense of 'go' is",
+            "expected": "went",
+            "got": "'gone'\n\n2. the present tense o",
+            "correct": false
+          },
+          {
+            "prompt": "The plural of 'child' is",
+            "expected": "children",
+            "got": "'children'\n- the plural of 'mo",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of 'big' is",
+            "expected": "small",
+            "got": "'little'.\n\n2. the opposite of ",
+            "correct": true
+          },
+          {
+            "prompt": "A person who writes books is called an",
+            "expected": "author",
+            "got": "author.\n\nexample: \"the author ",
+            "correct": true
+          },
+          {
+            "prompt": "The synonym for 'happy' is",
+            "expected": "joyful",
+            "got": "'content'\n\n2. the synonym for ",
+            "correct": false
+          },
+          {
+            "prompt": "The antonym of 'fast' is",
+            "expected": "slow",
+            "got": "'slow'\n\n2. the antonym of 'slo",
+            "correct": true
+          },
+          {
+            "prompt": "A baby dog is called a",
+            "expected": "puppy",
+            "got": "puppy.\n\n2. a puppy is a young ",
+            "correct": true
+          },
+          {
+            "prompt": "A group of lions is called a",
+            "expected": "pride",
+            "got": "pride of lions.",
+            "correct": true
+          },
+          {
+            "prompt": "The female version of 'king' is",
+            "expected": "queen",
+            "got": "'queen'\n- the male version of ",
+            "correct": true
+          },
+          {
+            "prompt": "To 'commence' means to",
+            "expected": "begin",
+            "got": "begin or start.\n\nexample: the ",
+            "correct": true
+          }
+        ],
+        "hellaswag": [
+          {
+            "context": "A person is making breakfast. They crack...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The student opened their textbook to stu...",
+            "predicted": "3",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "It started raining heavily outside. The ...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The chef was preparing a soup. They chop...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "A baby was crying because it was hungry....",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The car ran out of gas. The driver had t...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The phone rang in the middle of dinner. ...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The dog saw a squirrel in the park. It i...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The alarm clock rang at 7 AM. The person...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The water in the bathtub was too hot. Th...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The computer froze and stopped respondin...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The meeting was scheduled for 3 PM. Ever...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The store was having a sale. Many custom...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The library was very quiet. A person whi...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The patient had a fever. The doctor...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The power went out during the storm. The...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The cake was baking in the oven. The bak...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The soccer player kicked the ball toward...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "It was a hot summer day. People at the b...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The airplane was ready for takeoff. The ...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          }
+        ],
+        "math": [
+          {
+            "prompt": "What is 5 + 3?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 12 - 7?",
+            "expected": "5",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 6 * 4?",
+            "expected": "24",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 15 / 3?",
+            "expected": "5",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 9 + 11?",
+            "expected": "20",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 - 45?",
+            "expected": "55",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 7 * 7?",
+            "expected": "49",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 81 / 9?",
+            "expected": "9",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 25 + 25?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 1000 - 1?",
+            "expected": "999",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 3 * 3 * 3?",
+            "expected": "27",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 64 / 8?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 17 + 13?",
+            "expected": "30",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 50 - 25?",
+            "expected": "25",
+            "got": "50 - 25 is a formula used in f",
+            "correct": true
+          },
+          {
+            "prompt": "What is 8 * 8?",
+            "expected": "64",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 144 / 12?",
+            "expected": "12",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 99 + 1?",
+            "expected": "100",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 200 - 150?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 11 * 11?",
+            "expected": "121",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 / 4?",
+            "expected": "25",
+            "got": "",
+            "correct": false
+          }
+        ],
+        "knowledge": [
+          {
+            "prompt": "Who wrote Romeo and Juliet?",
+            "expected": "Shakespeare",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "In what year did World War II end?",
+            "expected": "1945",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the largest mammal?",
+            "expected": "whale",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who painted the Mona Lisa?",
+            "expected": "da Vinci",
+            "got": "1. leonardo da vinci\n\n2. miche",
+            "correct": true
+          },
+          {
+            "prompt": "What is the smallest country in the world?",
+            "expected": "Vatican",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which planet has the most moons?",
+            "expected": "Saturn",
+            "got": "1. jupiter: jupiter has 69 moo",
+            "correct": true
+          },
+          {
+            "prompt": "What year did man first land on the moon?",
+            "expected": "1969",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who invented the telephone?",
+            "expected": "Bell",
+            "got": "1. alexander graham bell\n\n2. t",
+            "correct": true
+          },
+          {
+            "prompt": "What is the hardest natural substance?",
+            "expected": "diamond",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which ocean is the largest?",
+            "expected": "Pacific",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who was the first president of the United States?",
+            "expected": "Washington",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the main ingredient in glass?",
+            "expected": "sand",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many continents are there?",
+            "expected": "7",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What gas do plants absorb?",
+            "expected": "carbon dioxide",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the capital of Australia?",
+            "expected": "Canberra",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who discovered penicillin?",
+            "expected": "Fleming",
+            "got": "1. alexander fleming: a scotti",
+            "correct": true
+          },
+          {
+            "prompt": "What is the tallest building in the world?",
+            "expected": "Burj",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many strings does a standard guitar have?",
+            "expected": "6",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the currency of Japan?",
+            "expected": "yen",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which element has the atomic symbol 'O'?",
+            "expected": "oxygen",
+            "got": "",
+            "correct": false
+          }
+        ]
+      }
+    },
+    {
+      "config": "2_layers",
+      "n_removed": 2,
+      "layers_removed": [
+        5,
+        6
+      ],
+      "completion_accuracy": 64.0,
+      "hellaswag_accuracy": 90.0,
+      "math_accuracy": 20.0,
+      "knowledge_accuracy": 15.0,
+      "overall_accuracy": 51.8,
+      "inference_time_ms": 186194.5,
+      "details": {
+        "completion": [
+          {
+            "prompt": "The capital of France is",
+            "expected": "Paris",
+            "got": "paris. the capital of spain is",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Japan is",
+            "expected": "Tokyo",
+            "got": "tokyo.\nthe capital of japan is",
+            "correct": true
+          },
+          {
+            "prompt": "The capital of Germany is",
+            "expected": "Berlin",
+            "got": "berlin. the capital of france ",
+            "correct": true
+          },
+          {
+            "prompt": "The largest country by area is",
+            "expected": "Russia",
+            "got": "russia, with an area of 7, 999",
+            "correct": true
+          },
+          {
+            "prompt": "The longest river in the world is the",
+            "expected": "Nile",
+            "got": "amazon river, which flows thro",
+            "correct": true
+          },
+          {
+            "prompt": "Mount Everest is located in",
+            "expected": "Nepal",
+            "got": "the himalayas, which are locat",
+            "correct": true
+          },
+          {
+            "prompt": "The Great Wall is in",
+            "expected": "China",
+            "got": "china, and it's a unesco world",
+            "correct": true
+          },
+          {
+            "prompt": "The Eiffel Tower is in",
+            "expected": "Paris",
+            "got": "the heart of paris, france. it",
+            "correct": true
+          },
+          {
+            "prompt": "The Sahara is a",
+            "expected": "desert",
+            "got": "vast, arid desert in north afr",
+            "correct": true
+          },
+          {
+            "prompt": "Australia is both a country and a",
+            "expected": "continent",
+            "got": "continent. it is a place where",
+            "correct": true
+          },
+          {
+            "prompt": "Water freezes at",
+            "expected": "0",
+            "got": "10:00 p.m.\nthe temperature dro",
+            "correct": true
+          },
+          {
+            "prompt": "The chemical symbol for gold is",
+            "expected": "Au",
+            "got": "au.\nhow does the chemical symb",
+            "correct": true
+          },
+          {
+            "prompt": "The speed of light is approximately",
+            "expected": "300",
+            "got": "300,000 kilometers per second ",
+            "correct": true
+          },
+          {
+            "prompt": "DNA stands for",
+            "expected": "deoxyribonucleic",
+            "got": ".\nthe first step in creating a",
+            "correct": false
+          },
+          {
+            "prompt": "The closest planet to the sun is",
+            "expected": "Mercury",
+            "got": "venus, which is 1.4 times fart",
+            "correct": false
+          },
+          {
+            "prompt": "Photosynthesis converts sunlight into",
+            "expected": "energy",
+            "got": "chemical energy.\nphotosynthesi",
+            "correct": true
+          },
+          {
+            "prompt": "The human body has",
+            "expected": "206",
+            "got": "a complex structure that is co",
+            "correct": false
+          },
+          {
+            "prompt": "Gravity was discovered by",
+            "expected": "Newton",
+            "got": "the ancient greeks, and it is ",
+            "correct": false
+          },
+          {
+            "prompt": "The atomic number of carbon is",
+            "expected": "6",
+            "got": "12. the atomic number of oxyge",
+            "correct": true
+          },
+          {
+            "prompt": "Sound travels faster in water than in",
+            "expected": "air",
+            "got": "air.\nthe sound of a bell is a ",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of hot is",
+            "expected": "cold",
+            "got": "cold.\nthe opposite of hot is c",
+            "correct": true
+          },
+          {
+            "prompt": "The color of the sky on a clear day is",
+            "expected": "blue",
+            "got": "blue. the color of the sky on ",
+            "correct": true
+          },
+          {
+            "prompt": "Dogs are known for their sense of",
+            "expected": "smell",
+            "got": "loyalty and devotion to their ",
+            "correct": false
+          },
+          {
+            "prompt": "Cats are",
+            "expected": "pets",
+            "got": "a popular choice for many peop",
+            "correct": false
+          },
+          {
+            "prompt": "Humans breathe",
+            "expected": "oxygen",
+            "got": ", and the more we do it, the m",
+            "correct": false
+          },
+          {
+            "prompt": "Fire needs oxygen to",
+            "expected": "burn",
+            "got": "survive.\nthe fire needs oxygen",
+            "correct": false
+          },
+          {
+            "prompt": "Ice is frozen",
+            "expected": "water",
+            "got": "and ready to use.\n\n2. add the ",
+            "correct": false
+          },
+          {
+            "prompt": "The sun rises in the",
+            "expected": "east",
+            "got": "east, and the moon rises in th",
+            "correct": true
+          },
+          {
+            "prompt": "Birds can",
+            "expected": "fly",
+            "got": "be found in the following loca",
+            "correct": false
+          },
+          {
+            "prompt": "Fish live in",
+            "expected": "water",
+            "got": "the ocean, and they are known ",
+            "correct": false
+          },
+          {
+            "prompt": "Two plus two equals",
+            "expected": "four",
+            "got": "three.\n\nthe first number is th",
+            "correct": false
+          },
+          {
+            "prompt": "Ten minus three equals",
+            "expected": "seven",
+            "got": "13. ten plus three equals 13.\n",
+            "correct": false
+          },
+          {
+            "prompt": "Five times five equals",
+            "expected": "twenty",
+            "got": "25.\n\n2. the sum of the squares",
+            "correct": true
+          },
+          {
+            "prompt": "A dozen means",
+            "expected": "twelve",
+            "got": "12.\na dozen is a common number",
+            "correct": true
+          },
+          {
+            "prompt": "A century is",
+            "expected": "100",
+            "got": "a long time.\nthe first century",
+            "correct": false
+          },
+          {
+            "prompt": "A millennium is",
+            "expected": "1000",
+            "got": "a thousand years.\nthe first mi",
+            "correct": true
+          },
+          {
+            "prompt": "Half of 100 is",
+            "expected": "50",
+            "got": "100.\nthe 100th percentile is 1",
+            "correct": false
+          },
+          {
+            "prompt": "The square root of 16 is",
+            "expected": "4",
+            "got": "4.\n\n2. the cube root of 16 is ",
+            "correct": true
+          },
+          {
+            "prompt": "One plus one equals",
+            "expected": "two",
+            "got": "two.\n\nthe first number is the ",
+            "correct": true
+          },
+          {
+            "prompt": "100 divided by 10 equals",
+            "expected": "10",
+            "got": "100.\n\n2. the square root of 10",
+            "correct": true
+          },
+          {
+            "prompt": "The past tense of 'go' is",
+            "expected": "went",
+            "got": "'gone'. the present tense of '",
+            "correct": false
+          },
+          {
+            "prompt": "The plural of 'child' is",
+            "expected": "children",
+            "got": "'children'\nthe plural of 'chil",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of 'big' is",
+            "expected": "small",
+            "got": "'little'.\nthe opposite of 'big",
+            "correct": true
+          },
+          {
+            "prompt": "A person who writes books is called an",
+            "expected": "author",
+            "got": "author.\na person who writes bo",
+            "correct": true
+          },
+          {
+            "prompt": "The synonym for 'happy' is",
+            "expected": "joyful",
+            "got": "'blessed' or 'blessed'\n\n2. the",
+            "correct": false
+          },
+          {
+            "prompt": "The antonym of 'fast' is",
+            "expected": "slow",
+            "got": "'slow'.\nthe antonym of 'slow' ",
+            "correct": true
+          },
+          {
+            "prompt": "A baby dog is called a",
+            "expected": "puppy",
+            "got": "\"baby\" because it is a newborn",
+            "correct": true
+          },
+          {
+            "prompt": "A group of lions is called a",
+            "expected": "pride",
+            "got": "\"leopard\" because they have a ",
+            "correct": false
+          },
+          {
+            "prompt": "The female version of 'king' is",
+            "expected": "queen",
+            "got": "'queen'\nthe male version of 'k",
+            "correct": true
+          },
+          {
+            "prompt": "To 'commence' means to",
+            "expected": "begin",
+            "got": "begin, to start, or to begin a",
+            "correct": true
+          }
+        ],
+        "hellaswag": [
+          {
+            "context": "A person is making breakfast. They crack...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The student opened their textbook to stu...",
+            "predicted": "3",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "It started raining heavily outside. The ...",
+            "predicted": "0",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "The chef was preparing a soup. They chop...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "A baby was crying because it was hungry....",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The car ran out of gas. The driver had t...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The phone rang in the middle of dinner. ...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The dog saw a squirrel in the park. It i...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The alarm clock rang at 7 AM. The person...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The water in the bathtub was too hot. Th...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The computer froze and stopped respondin...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The meeting was scheduled for 3 PM. Ever...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The store was having a sale. Many custom...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The library was very quiet. A person whi...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The patient had a fever. The doctor...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The power went out during the storm. The...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The cake was baking in the oven. The bak...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The soccer player kicked the ball toward...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "It was a hot summer day. People at the b...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The airplane was ready for takeoff. The ...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          }
+        ],
+        "math": [
+          {
+            "prompt": "What is 5 + 3?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 12 - 7?",
+            "expected": "5",
+            "got": "12 - 7 = 19\n19 = 19\n19 = 19\n19",
+            "correct": false
+          },
+          {
+            "prompt": "What is 6 * 4?",
+            "expected": "24",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 15 / 3?",
+            "expected": "5",
+            "got": "15 / 3 = 4.5\n4.5 / 3 = 1.3\n1.3",
+            "correct": true
+          },
+          {
+            "prompt": "What is 9 + 11?",
+            "expected": "20",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 - 45?",
+            "expected": "55",
+            "got": "100 - 45 = 100 - 45 = 100 - 45",
+            "correct": false
+          },
+          {
+            "prompt": "What is 7 * 7?",
+            "expected": "49",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 81 / 9?",
+            "expected": "9",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 25 + 25?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 1000 - 1?",
+            "expected": "999",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 3 * 3 * 3?",
+            "expected": "27",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 64 / 8?",
+            "expected": "8",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 17 + 13?",
+            "expected": "30",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 50 - 25?",
+            "expected": "25",
+            "got": "answer according to: 50 - 25 i",
+            "correct": true
+          },
+          {
+            "prompt": "What is 8 * 8?",
+            "expected": "64",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 144 / 12?",
+            "expected": "12",
+            "got": "144 / 12 = 12\n12 / 12 = 1\n12 /",
+            "correct": true
+          },
+          {
+            "prompt": "What is 99 + 1?",
+            "expected": "100",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 200 - 150?",
+            "expected": "50",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 11 * 11?",
+            "expected": "121",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 / 4?",
+            "expected": "25",
+            "got": "100 / 4 = 25\n25 / 4 = 6\n6 / 4 ",
+            "correct": true
+          }
+        ],
+        "knowledge": [
+          {
+            "prompt": "Who wrote Romeo and Juliet?",
+            "expected": "Shakespeare",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "In what year did World War II end?",
+            "expected": "1945",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the largest mammal?",
+            "expected": "whale",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who painted the Mona Lisa?",
+            "expected": "da Vinci",
+            "got": "the mona lisa is a painting by",
+            "correct": true
+          },
+          {
+            "prompt": "What is the smallest country in the world?",
+            "expected": "Vatican",
+            "got": "10. what is the capital of the",
+            "correct": false
+          },
+          {
+            "prompt": "Which planet has the most moons?",
+            "expected": "Saturn",
+            "got": "the answer is mars. mars is th",
+            "correct": false
+          },
+          {
+            "prompt": "What year did man first land on the moon?",
+            "expected": "1969",
+            "got": "1. what is the name of the moo",
+            "correct": false
+          },
+          {
+            "prompt": "Who invented the telephone?",
+            "expected": "Bell",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the hardest natural substance?",
+            "expected": "diamond",
+            "got": "answer: the hardest natural su",
+            "correct": false
+          },
+          {
+            "prompt": "Which ocean is the largest?",
+            "expected": "Pacific",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who was the first president of the United States?",
+            "expected": "Washington",
+            "got": "1. george washington\n2. thomas",
+            "correct": true
+          },
+          {
+            "prompt": "What is the main ingredient in glass?",
+            "expected": "sand",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many continents are there?",
+            "expected": "7",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What gas do plants absorb?",
+            "expected": "carbon dioxide",
+            "got": "how does the gas absorption pr",
+            "correct": false
+          },
+          {
+            "prompt": "What is the capital of Australia?",
+            "expected": "Canberra",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who discovered penicillin?",
+            "expected": "Fleming",
+            "got": "the answer is penicillin. peni",
+            "correct": false
+          },
+          {
+            "prompt": "What is the tallest building in the world?",
+            "expected": "Burj",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "How many strings does a standard guitar have?",
+            "expected": "6",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the currency of Japan?",
+            "expected": "yen",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which element has the atomic symbol 'O'?",
+            "expected": "oxygen",
+            "got": "a. oxygen\nb. oxygen\nc. oxygen\n",
+            "correct": true
+          }
+        ]
+      }
+    },
+    {
+      "config": "4_layers",
+      "n_removed": 4,
+      "layers_removed": [
+        5,
+        6,
+        3,
+        4
+      ],
+      "completion_accuracy": 18.0,
+      "hellaswag_accuracy": 50.0,
+      "math_accuracy": 30.0,
+      "knowledge_accuracy": 0.0,
+      "overall_accuracy": 22.7,
+      "inference_time_ms": 219153.6,
+      "details": {
+        "completion": [
+          {
+            "prompt": "The capital of France is",
+            "expected": "Paris",
+            "got": "a city that has a rich history",
+            "correct": false
+          },
+          {
+            "prompt": "The capital of Japan is",
+            "expected": "Tokyo",
+            "got": "a city that has been known for",
+            "correct": false
+          },
+          {
+            "prompt": "The capital of Germany is",
+            "expected": "Berlin",
+            "got": "the capital of germany. the ca",
+            "correct": false
+          },
+          {
+            "prompt": "The largest country by area is",
+            "expected": "Russia",
+            "got": "the united states, with a popu",
+            "correct": false
+          },
+          {
+            "prompt": "The longest river in the world is the",
+            "expected": "Nile",
+            "got": "mississippi river, which stret",
+            "correct": false
+          },
+          {
+            "prompt": "Mount Everest is located in",
+            "expected": "Nepal",
+            "got": "the heart of the city, and it ",
+            "correct": false
+          },
+          {
+            "prompt": "The Great Wall is in",
+            "expected": "China",
+            "got": "the heart of the city, and the",
+            "correct": false
+          },
+          {
+            "prompt": "The Eiffel Tower is in",
+            "expected": "Paris",
+            "got": "the form of a series of equati",
+            "correct": false
+          },
+          {
+            "prompt": "The Sahara is a",
+            "expected": "desert",
+            "got": "desert, and the climate is hot",
+            "correct": true
+          },
+          {
+            "prompt": "Australia is both a country and a",
+            "expected": "continent",
+            "got": "continent.\n\nthe country of aus",
+            "correct": true
+          },
+          {
+            "prompt": "Water freezes at",
+            "expected": "0",
+            "got": "the same time.\n\nthe water trea",
+            "correct": false
+          },
+          {
+            "prompt": "The chemical symbol for gold is",
+            "expected": "Au",
+            "got": "the color of the metal.\n\nthe c",
+            "correct": false
+          },
+          {
+            "prompt": "The speed of light is approximately",
+            "expected": "300",
+            "got": "100,000 times of light. the sp",
+            "correct": false
+          },
+          {
+            "prompt": "DNA stands for",
+            "expected": "deoxyribonucleic",
+            "got": "the first time.\n\nthe dna seque",
+            "correct": false
+          },
+          {
+            "prompt": "The closest planet to the sun is",
+            "expected": "Mercury",
+            "got": "the closest planet to the sun ",
+            "correct": false
+          },
+          {
+            "prompt": "Photosynthesis converts sunlight into",
+            "expected": "energy",
+            "got": "the upper canopy area.\n\n3. pho",
+            "correct": false
+          },
+          {
+            "prompt": "The human body has",
+            "expected": "206",
+            "got": "a number of functions that are",
+            "correct": false
+          },
+          {
+            "prompt": "Gravity was discovered by",
+            "expected": "Newton",
+            "got": "the ancient greeks. the greeks",
+            "correct": false
+          },
+          {
+            "prompt": "The atomic number of carbon is",
+            "expected": "6",
+            "got": "1.5. the atomic number of carb",
+            "correct": false
+          },
+          {
+            "prompt": "Sound travels faster in water than in",
+            "expected": "air",
+            "got": "air.\n\nthe reason for sound tra",
+            "correct": true
+          },
+          {
+            "prompt": "The opposite of hot is",
+            "expected": "cold",
+            "got": "a great way to get to know the",
+            "correct": false
+          },
+          {
+            "prompt": "The color of the sky on a clear day is",
+            "expected": "blue",
+            "got": "blue.\n\nthe color of the sky on",
+            "correct": true
+          },
+          {
+            "prompt": "Dogs are known for their sense of",
+            "expected": "smell",
+            "got": "movement and their ability to ",
+            "correct": false
+          },
+          {
+            "prompt": "Cats are",
+            "expected": "pets",
+            "got": "a great option for those who w",
+            "correct": false
+          },
+          {
+            "prompt": "Humans breathe",
+            "expected": "oxygen",
+            "got": ", and the world is a better pl",
+            "correct": false
+          },
+          {
+            "prompt": "Fire needs oxygen to",
+            "expected": "burn",
+            "got": "be able to function correctly.",
+            "correct": false
+          },
+          {
+            "prompt": "Ice is frozen",
+            "expected": "water",
+            "got": ".\n\nthe ice is frozen.\n\nthe ice",
+            "correct": false
+          },
+          {
+            "prompt": "The sun rises in the",
+            "expected": "east",
+            "got": "sky, and the sun sets the worl",
+            "correct": false
+          },
+          {
+            "prompt": "Birds can",
+            "expected": "fly",
+            "got": "be used to create a bird feede",
+            "correct": false
+          },
+          {
+            "prompt": "Fish live in",
+            "expected": "water",
+            "got": "a small town in the state of m",
+            "correct": false
+          },
+          {
+            "prompt": "Two plus two equals",
+            "expected": "four",
+            "got": "three, two, plus two equals th",
+            "correct": false
+          },
+          {
+            "prompt": "Ten minus three equals",
+            "expected": "seven",
+            "got": "to the number of ten. the numb",
+            "correct": false
+          },
+          {
+            "prompt": "Five times five equals",
+            "expected": "twenty",
+            "got": ".\n\nthe first five times are th",
+            "correct": false
+          },
+          {
+            "prompt": "A dozen means",
+            "expected": "twelve",
+            "got": "of the 1000-year-old. the 1000",
+            "correct": false
+          },
+          {
+            "prompt": "A century is",
+            "expected": "100",
+            "got": "a poem by the english poet joh",
+            "correct": false
+          },
+          {
+            "prompt": "A millennium is",
+            "expected": "1000",
+            "got": "a 1000-year-old.\n\nthe 1000-yea",
+            "correct": true
+          },
+          {
+            "prompt": "Half of 100 is",
+            "expected": "50",
+            "got": "a 100-bit half half of 100-bit",
+            "correct": false
+          },
+          {
+            "prompt": "The square root of 16 is",
+            "expected": "4",
+            "got": "16. the recipe for 16 is 16. t",
+            "correct": false
+          },
+          {
+            "prompt": "One plus one equals",
+            "expected": "two",
+            "got": "one.",
+            "correct": false
+          },
+          {
+            "prompt": "100 divided by 10 equals",
+            "expected": "10",
+            "got": "100 divided by 100 divided by ",
+            "correct": true
+          },
+          {
+            "prompt": "The past tense of 'go' is",
+            "expected": "went",
+            "got": "0.00.00.00.00.00.00.00.00.00.",
+            "correct": false
+          },
+          {
+            "prompt": "The plural of 'child' is",
+            "expected": "children",
+            "got": "a playful and playful approach",
+            "correct": false
+          },
+          {
+            "prompt": "The opposite of 'big' is",
+            "expected": "small",
+            "got": "a collection of the same numbe",
+            "correct": true
+          },
+          {
+            "prompt": "A person who writes books is called an",
+            "expected": "author",
+            "got": "author.\n\nthe word \"author\" is ",
+            "correct": true
+          },
+          {
+            "prompt": "The synonym for 'happy' is",
+            "expected": "joyful",
+            "got": "a synonym for 'happy' is a syn",
+            "correct": false
+          },
+          {
+            "prompt": "The antonym of 'fast' is",
+            "expected": "slow",
+            "got": "a fast-loading algorithm that ",
+            "correct": false
+          },
+          {
+            "prompt": "A baby dog is called a",
+            "expected": "puppy",
+            "got": "\"baby\" dog.\n\nthe \"baby\" dog is",
+            "correct": false
+          },
+          {
+            "prompt": "A group of lions is called a",
+            "expected": "pride",
+            "got": "group of lions.\n\nthe word \"lio",
+            "correct": false
+          },
+          {
+            "prompt": "The female version of 'king' is",
+            "expected": "queen",
+            "got": "the same as the male version o",
+            "correct": false
+          },
+          {
+            "prompt": "To 'commence' means to",
+            "expected": "begin",
+            "got": "'begin'\n\n3. to 'commence'\nto '",
+            "correct": true
+          }
+        ],
+        "hellaswag": [
+          {
+            "context": "A person is making breakfast. They crack...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The student opened their textbook to stu...",
+            "predicted": "0",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "It started raining heavily outside. The ...",
+            "predicted": "0",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "The chef was preparing a soup. They chop...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "A baby was crying because it was hungry....",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The car ran out of gas. The driver had t...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The phone rang in the middle of dinner. ...",
+            "predicted": "0",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "The dog saw a squirrel in the park. It i...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The alarm clock rang at 7 AM. The person...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The water in the bathtub was too hot. Th...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The computer froze and stopped respondin...",
+            "predicted": "1",
+            "correct": 1,
+            "is_correct": "True"
+          },
+          {
+            "context": "The meeting was scheduled for 3 PM. Ever...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The store was having a sale. Many custom...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "The library was very quiet. A person whi...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The patient had a fever. The doctor...",
+            "predicted": "3",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The power went out during the storm. The...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The cake was baking in the oven. The bak...",
+            "predicted": "1",
+            "correct": 0,
+            "is_correct": "False"
+          },
+          {
+            "context": "The soccer player kicked the ball toward...",
+            "predicted": "0",
+            "correct": 0,
+            "is_correct": "True"
+          },
+          {
+            "context": "It was a hot summer day. People at the b...",
+            "predicted": "0",
+            "correct": 1,
+            "is_correct": "False"
+          },
+          {
+            "context": "The airplane was ready for takeoff. The ...",
+            "predicted": "2",
+            "correct": 0,
+            "is_correct": "False"
+          }
+        ],
+        "math": [
+          {
+            "prompt": "What is 5 + 3?",
+            "expected": "8",
+            "got": "5 + 3\n\n5 + 3\n\n5 + 3\n\n5 + 3\n\n5 ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 12 - 7?",
+            "expected": "5",
+            "got": "12 - 7? what is 12 - 7?\n12 - 7",
+            "correct": false
+          },
+          {
+            "prompt": "What is 6 * 4?",
+            "expected": "24",
+            "got": "6 * 4 is a 1000 * 6 * 4 is a 1",
+            "correct": false
+          },
+          {
+            "prompt": "What is 15 / 3?",
+            "expected": "5",
+            "got": "15 / 3?\n15 / 3?\n15 / 3?\n15 / 1",
+            "correct": true
+          },
+          {
+            "prompt": "What is 9 + 11?",
+            "expected": "20",
+            "got": "1. what is 9 + 11?\n1. what is ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 - 45?",
+            "expected": "55",
+            "got": "100 - 45?\n100 - 45?\n100 - 45?\n",
+            "correct": false
+          },
+          {
+            "prompt": "What is 7 * 7?",
+            "expected": "49",
+            "got": "1. 7 * 7. 1 * 7 * 7 * 7 * 7 * ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 81 / 9?",
+            "expected": "9",
+            "got": "2. what is 81 / 9?\n3. what is ",
+            "correct": true
+          },
+          {
+            "prompt": "What is 25 + 25?",
+            "expected": "50",
+            "got": "25. what is 25 + 25? 26. what ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 1000 - 1?",
+            "expected": "999",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is 3 * 3 * 3?",
+            "expected": "27",
+            "got": "3 * 3 * 3?\nwhat is 3 * 3?\n\n3 *",
+            "correct": false
+          },
+          {
+            "prompt": "What is 64 / 8?",
+            "expected": "8",
+            "got": "1. 64 / 8?\nwhat is 64 / 8?\n1. ",
+            "correct": true
+          },
+          {
+            "prompt": "What is 17 + 13?",
+            "expected": "30",
+            "got": "2019-12-17 what is 17 + 13? 20",
+            "correct": false
+          },
+          {
+            "prompt": "What is 50 - 25?",
+            "expected": "25",
+            "got": "2019-05-25 - 50 - 25? 2019-05-",
+            "correct": true
+          },
+          {
+            "prompt": "What is 8 * 8?",
+            "expected": "64",
+            "got": "8 * 8 * 8 * 8 * 8 * 8 * 8 * 8 ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 144 / 12?",
+            "expected": "12",
+            "got": "144 / 144 / 144 / 144 / 144 / ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 99 + 1?",
+            "expected": "100",
+            "got": "the 99 + 1 is a 1000 + 1 is a ",
+            "correct": true
+          },
+          {
+            "prompt": "What is 200 - 150?",
+            "expected": "50",
+            "got": "200 - 150? 200 - 150? 200 - 15",
+            "correct": true
+          },
+          {
+            "prompt": "What is 11 * 11?",
+            "expected": "121",
+            "got": "12 * 11 * 12 * 12 * 12 * 13 * ",
+            "correct": false
+          },
+          {
+            "prompt": "What is 100 / 4?",
+            "expected": "25",
+            "got": "100 / 4?\n100 / 4?\n100 / 4?\n100",
+            "correct": false
+          }
+        ],
+        "knowledge": [
+          {
+            "prompt": "Who wrote Romeo and Juliet?",
+            "expected": "Shakespeare",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "In what year did World War II end?",
+            "expected": "1945",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the largest mammal?",
+            "expected": "whale",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Who painted the Mona Lisa?",
+            "expected": "da Vinci",
+            "got": "1. the mona lisa is a painting",
+            "correct": false
+          },
+          {
+            "prompt": "What is the smallest country in the world?",
+            "expected": "Vatican",
+            "got": "2. what is the smallest countr",
+            "correct": false
+          },
+          {
+            "prompt": "Which planet has the most moons?",
+            "expected": "Saturn",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What year did man first land on the moon?",
+            "expected": "1969",
+            "got": "2. what is the difference betw",
+            "correct": false
+          },
+          {
+            "prompt": "Who invented the telephone?",
+            "expected": "Bell",
+            "got": "1. the telephone was invented ",
+            "correct": false
+          },
+          {
+            "prompt": "What is the hardest natural substance?",
+            "expected": "diamond",
+            "got": "the hardest natural substance ",
+            "correct": false
+          },
+          {
+            "prompt": "Which ocean is the largest?",
+            "expected": "Pacific",
+            "got": "1. which ocean is the largest?",
+            "correct": false
+          },
+          {
+            "prompt": "Who was the first president of the United States?",
+            "expected": "Washington",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the main ingredient in glass?",
+            "expected": "sand",
+            "got": "the main ingredient in glass i",
+            "correct": false
+          },
+          {
+            "prompt": "How many continents are there?",
+            "expected": "7",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What gas do plants absorb?",
+            "expected": "carbon dioxide",
+            "got": "1. absorb: what is the gas tha",
+            "correct": false
+          },
+          {
+            "prompt": "What is the capital of Australia?",
+            "expected": "Canberra",
+            "got": "the capital of australia is th",
+            "correct": false
+          },
+          {
+            "prompt": "Who discovered penicillin?",
+            "expected": "Fleming",
+            "got": "the author of the article is: ",
+            "correct": false
+          },
+          {
+            "prompt": "What is the tallest building in the world?",
+            "expected": "Burj",
+            "got": "2. what is the tallest buildin",
+            "correct": false
+          },
+          {
+            "prompt": "How many strings does a standard guitar have?",
+            "expected": "6",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "What is the currency of Japan?",
+            "expected": "yen",
+            "got": "",
+            "correct": false
+          },
+          {
+            "prompt": "Which element has the atomic symbol 'O'?",
+            "expected": "oxygen",
+            "got": "the symbol 'o' is the atomic s",
+            "correct": false
+          }
+        ]
+      }
+    }
+  ]
+}

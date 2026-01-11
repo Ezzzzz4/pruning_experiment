@@ -1,0 +1,111 @@
+{
+  "model_name": "GPT2",
+  "model_id": "gpt2",
+  "total_layers": 12,
+  "redundant_layers": [
+    6,
+    8,
+    5,
+    7,
+    3,
+    4,
+    9,
+    10
+  ],
+  "baseline": {
+    "perplexity": 139.46587872189087,
+    "speed": {
+      "avg_time_s": 0.7802743500040379,
+      "tokens_per_second": 64.08002518568149,
+      "std_time": 0.056748773464628546
+    }
+  },
+  "ablations": [
+    {
+      "n_removed": 1,
+      "layers_removed": [
+        6
+      ],
+      "perplexity": 141.60710318907962,
+      "ppl_change_pct": 1.5353034640527152,
+      "speed": {
+        "avg_time_s": 0.7364447800035123,
+        "tokens_per_second": 67.89375301127335,
+        "std_time": 0.00995543015339318
+      },
+      "speed_change_pct": 5.951508000411994
+    },
+    {
+      "n_removed": 2,
+      "layers_removed": [
+        6,
+        8
+      ],
+      "perplexity": 148.49670885029695,
+      "ppl_change_pct": 6.475297191805941,
+      "speed": {
+        "avg_time_s": 0.6835253999917767,
+        "tokens_per_second": 73.15017115765052,
+        "std_time": 0.021598988900509656
+      },
+      "speed_change_pct": 14.154404505439746
+    },
+    {
+      "n_removed": 4,
+      "layers_removed": [
+        6,
+        8,
+        5,
+        7
+      ],
+      "perplexity": 260.44038810396455,
+      "ppl_change_pct": 86.74129506853009,
+      "speed": {
+        "avg_time_s": 0.2621634199982509,
+        "tokens_per_second": 190.72073441952196,
+        "std_time": 0.01062743826970731
+      },
+      "speed_change_pct": 197.62899416297043
+    },
+    {
+      "n_removed": 6,
+      "layers_removed": [
+        6,
+        8,
+        5,
+        7,
+        3,
+        4
+      ],
+      "perplexity": 407.9491012034487,
+      "ppl_change_pct": 192.50817830283827,
+      "speed": {
+        "avg_time_s": 0.21951010000775567,
+        "tokens_per_second": 227.77995180282554,
+        "std_time": 0.011261687789078146
+      },
+      "speed_change_pct": 255.46170767380153
+    },
+    {
+      "n_removed": 8,
+      "layers_removed": [
+        6,
+        8,
+        5,
+        7,
+        3,
+        4,
+        9,
+        10
+      ],
+      "perplexity": 936.9923653126046,
+      "ppl_change_pct": 571.8434457944102,
+      "speed": {
+        "avg_time_s": 0.16385220999945888,
+        "tokens_per_second": 305.15304004849935,
+        "std_time": 0.007756585243809863
+      },
+      "speed_change_pct": 376.2061799511979
+    }
+  ]
+}

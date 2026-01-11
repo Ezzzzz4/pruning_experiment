@@ -1,0 +1,711 @@
+{
+  "model_name": "Qwen2.5-0.5B",
+  "configurations": [
+    {
+      "config": "baseline",
+      "n_removed": 0,
+      "layers_removed": [],
+      "completion_accuracy": 90.0,
+      "hellaswag_accuracy": 100.0,
+      "coherence_score": 92.24561251685247,
+      "details": {
+        "completion": {
+          "accuracy": 90.0,
+          "correct": 9,
+          "total": 10,
+          "details": [
+            {
+              "prompt": "The capital of France is",
+              "generated": "paris. it is the largest city in europe and the se",
+              "expected": [
+                "Paris"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Water freezes at",
+              "generated": "0 degrees celsius and boils at 100 degrees celsius",
+              "expected": [
+                "0",
+                "32",
+                "zero",
+                "degrees"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The sun rises in the",
+              "generated": "east and sets in the west. the sun rises in the ea",
+              "expected": [
+                "east",
+                "morning"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Two plus two equals",
+              "generated": "four. what is the value of the expression 2 + 2 + ",
+              "expected": [
+                "four",
+                "4"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The largest planet in our solar system is",
+              "generated": "____\na. mercury\nb. venus\nc. earth\nd. mars\nanswer:",
+              "expected": [
+                "Jupiter"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Dogs are known for their",
+              "generated": "loyalty and affection, but they can also be quite ",
+              "expected": [
+                "loyalty",
+                "bark",
+                "smell",
+                "hearing"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The opposite of hot is",
+              "generated": "____\na. cold\nb. warm\nc. cold or warm\nanswer:\na",
+              "expected": [
+                "cold"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Humans need oxygen to",
+              "generated": "breathe. oxygen is a gas that we breathe in and ou",
+              "expected": [
+                "breathe",
+                "live",
+                "survive"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The color of the sky on a clear day is",
+              "generated": "blue, and the color of the sky on a rainy day is g",
+              "expected": [
+                "blue"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Einstein is famous for his theory of",
+              "generated": "relativity. he said that the speed of light is the",
+              "expected": [
+                "relativity"
+              ],
+              "correct": true
+            }
+          ]
+        },
+        "hellaswag": {
+          "accuracy": 100.0,
+          "correct": 5,
+          "total": 5,
+          "details": [
+            {
+              "context": "A person is making a sandwich. They put bread on a...",
+              "predicted": "added some cheese and lettuce",
+              "correct": "added some cheese and lettuce",
+              "is_correct": "True"
+            },
+            {
+              "context": "The student opened their textbook to study for the...",
+              "predicted": "started reading the chapter ca",
+              "correct": "started reading the chapter ca",
+              "is_correct": "True"
+            },
+            {
+              "context": "It started raining heavily outside. The person gra...",
+              "predicted": "an umbrella before going out",
+              "correct": "an umbrella before going out",
+              "is_correct": "True"
+            },
+            {
+              "context": "The chef was preparing dinner in the kitchen. They...",
+              "predicted": "put them in a pot on the stove",
+              "correct": "put them in a pot on the stove",
+              "is_correct": "True"
+            },
+            {
+              "context": "A baby was crying because it was hungry. The mothe...",
+              "predicted": "gave it a bottle of milk",
+              "correct": "gave it a bottle of milk",
+              "is_correct": "True"
+            }
+          ]
+        },
+        "coherence": {
+          "avg_coherence": 92.24561251685247,
+          "generations": [
+            {
+              "prompt": "Once upon a time, there was a",
+              "generated": " farmer named Fred. He had a big garden where he grew vegetables. His garden was beautiful and full ",
+              "coherence_score": 94.81481481481482
+            },
+            {
+              "prompt": "The scientist discovered that",
+              "generated": " the amount of data in the data set is 100 GB. He has already used 10 GB. The scientist needs to use",
+              "coherence_score": 90.5982905982906
+            },
+            {
+              "prompt": "In the future, technology will",
+              "generated": " be able to control your thoughts. You can ask a computer to do any task you want, without ever sayi",
+              "coherence_score": 88.88888888888889
+            },
+            {
+              "prompt": "The most important thing in life is",
+              "generated": " to enjoy life, and the most important thing for a person is to make the most of their time. The fol",
+              "coherence_score": 92.09229877562849
+            },
+            {
+              "prompt": "When you make a mistake, you should",
+              "generated": " ________.\nA. say sorry to yourself\nB. tell your parents about it\nC. try to find out the reason\nD. d",
+              "coherence_score": 94.83376950663954
+            }
+          ]
+        }
+      }
+    },
+    {
+      "config": "1_layers_removed",
+      "n_removed": 1,
+      "layers_removed": [
+        5
+      ],
+      "completion_accuracy": 90.0,
+      "hellaswag_accuracy": 80.0,
+      "coherence_score": 90.10879920261503,
+      "details": {
+        "completion": {
+          "accuracy": 90.0,
+          "correct": 9,
+          "total": 10,
+          "details": [
+            {
+              "prompt": "The capital of France is",
+              "generated": "paris. the capital of france is paris. the capital",
+              "expected": [
+                "Paris"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Water freezes at",
+              "generated": "0 degrees celsius. at 0 degrees celsius, water is ",
+              "expected": [
+                "0",
+                "32",
+                "zero",
+                "degrees"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The sun rises in the",
+              "generated": "east and sets in the west\uff0e\na. \u4e1c\nb. \u897f\nc.",
+              "expected": [
+                "east",
+                "morning"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Two plus two equals",
+              "generated": "four\uff0e______\uff0e______\uff0e\na. \uff0e\nb. \uff0e\nc",
+              "expected": [
+                "four",
+                "4"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The largest planet in our solar system is",
+              "generated": "jupiter, which has a mass of 1.38 x 10^27 kg",
+              "expected": [
+                "Jupiter"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Dogs are known for their",
+              "generated": "ability to learn and adapt to their environment. t",
+              "expected": [
+                "loyalty",
+                "bark",
+                "smell",
+                "hearing"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "The opposite of hot is",
+              "generated": "____\na. cold\nb. hot\nc. warm\nd. cold or warm",
+              "expected": [
+                "cold"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Humans need oxygen to",
+              "generated": "survive. they breathe in oxygen and breathe out ca",
+              "expected": [
+                "breathe",
+                "live",
+                "survive"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The color of the sky on a clear day is",
+              "generated": "____\na. blue\nb. green\nc. yellow\nd. red\nanswer:",
+              "expected": [
+                "blue"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Einstein is famous for his theory of",
+              "generated": "relativity. he said that everything in the univers",
+              "expected": [
+                "relativity"
+              ],
+              "correct": true
+            }
+          ]
+        },
+        "hellaswag": {
+          "accuracy": 80.0,
+          "correct": 4,
+          "total": 5,
+          "details": [
+            {
+              "context": "A person is making a sandwich. They put bread on a...",
+              "predicted": "threw the bread out the window",
+              "correct": "added some cheese and lettuce",
+              "is_correct": "False"
+            },
+            {
+              "context": "The student opened their textbook to study for the...",
+              "predicted": "started reading the chapter ca",
+              "correct": "started reading the chapter ca",
+              "is_correct": "True"
+            },
+            {
+              "context": "It started raining heavily outside. The person gra...",
+              "predicted": "an umbrella before going out",
+              "correct": "an umbrella before going out",
+              "is_correct": "True"
+            },
+            {
+              "context": "The chef was preparing dinner in the kitchen. They...",
+              "predicted": "put them in a pot on the stove",
+              "correct": "put them in a pot on the stove",
+              "is_correct": "True"
+            },
+            {
+              "context": "A baby was crying because it was hungry. The mothe...",
+              "predicted": "gave it a bottle of milk",
+              "correct": "gave it a bottle of milk",
+              "is_correct": "True"
+            }
+          ]
+        },
+        "coherence": {
+          "avg_coherence": 90.10879920261503,
+          "generations": [
+            {
+              "prompt": "Once upon a time, there was a",
+              "generated": " group of students who were very good at math. They were very smart and could do math problems very ",
+              "coherence_score": 88.65248226950354
+            },
+            {
+              "prompt": "The scientist discovered that",
+              "generated": " the Earth's temperature has increased by 2 degrees each hour. If it initially warmed up to 30 degre",
+              "coherence_score": 89.69278033794163
+            },
+            {
+              "prompt": "In the future, technology will",
+              "generated": " be even more advanced than it is today. The invention of a new type of device will be the most sign",
+              "coherence_score": 91.85185185185185
+            },
+            {
+              "prompt": "The most important thing in life is",
+              "generated": " to have a goal. It's not enough to have the right tools and the right knowledge. Without those, you",
+              "coherence_score": 89.9414761483727
+            },
+            {
+              "prompt": "When you make a mistake, you should",
+              "generated": " do the following: ____\nA. Correct it\nB. Not correct it\nC. Correct it but not use it\nD. Use it but n",
+              "coherence_score": 90.4054054054054
+            }
+          ]
+        }
+      }
+    },
+    {
+      "config": "2_layers_removed",
+      "n_removed": 2,
+      "layers_removed": [
+        5,
+        12
+      ],
+      "completion_accuracy": 60.0,
+      "hellaswag_accuracy": 80.0,
+      "coherence_score": 88.81249418159761,
+      "details": {
+        "completion": {
+          "accuracy": 60.0,
+          "correct": 6,
+          "total": 10,
+          "details": [
+            {
+              "prompt": "The capital of France is",
+              "generated": "the capital of the country of france. the capital ",
+              "expected": [
+                "Paris"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Water freezes at",
+              "generated": "0\u00b0c. at 0\u00b0c, the freezing point of water is _____.",
+              "expected": [
+                "0",
+                "32",
+                "zero",
+                "degrees"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The sun rises in the",
+              "generated": "east and sets in the west. the sun rises in the ea",
+              "expected": [
+                "east",
+                "morning"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Two plus two equals",
+              "generated": "what? - 10/10/2018 - 10/1",
+              "expected": [
+                "four",
+                "4"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "The largest planet in our solar system is",
+              "generated": "the one that contains the most number of known moo",
+              "expected": [
+                "Jupiter"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Dogs are known for their",
+              "generated": "loyalty and their ability to form strong bonds wit",
+              "expected": [
+                "loyalty",
+                "bark",
+                "smell",
+                "hearing"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The opposite of hot is",
+              "generated": "cold. the opposite of cold is hot. the opposite of",
+              "expected": [
+                "cold"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Humans need oxygen to",
+              "generated": "breathe, and they also need to breathe. which of t",
+              "expected": [
+                "breathe",
+                "live",
+                "survive"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The color of the sky on a clear day is",
+              "generated": "a beautiful and unique phenomenon. the color of th",
+              "expected": [
+                "blue"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Einstein is famous for his theory of",
+              "generated": "relativity, which states that the speed of light i",
+              "expected": [
+                "relativity"
+              ],
+              "correct": true
+            }
+          ]
+        },
+        "hellaswag": {
+          "accuracy": 80.0,
+          "correct": 4,
+          "total": 5,
+          "details": [
+            {
+              "context": "A person is making a sandwich. They put bread on a...",
+              "predicted": "threw the bread out the window",
+              "correct": "added some cheese and lettuce",
+              "is_correct": "False"
+            },
+            {
+              "context": "The student opened their textbook to study for the...",
+              "predicted": "started reading the chapter ca",
+              "correct": "started reading the chapter ca",
+              "is_correct": "True"
+            },
+            {
+              "context": "It started raining heavily outside. The person gra...",
+              "predicted": "an umbrella before going out",
+              "correct": "an umbrella before going out",
+              "is_correct": "True"
+            },
+            {
+              "context": "The chef was preparing dinner in the kitchen. They...",
+              "predicted": "put them in a pot on the stove",
+              "correct": "put them in a pot on the stove",
+              "is_correct": "True"
+            },
+            {
+              "context": "A baby was crying because it was hungry. The mothe...",
+              "predicted": "gave it a bottle of milk",
+              "correct": "gave it a bottle of milk",
+              "is_correct": "True"
+            }
+          ]
+        },
+        "coherence": {
+          "avg_coherence": 88.81249418159761,
+          "generations": [
+            {
+              "prompt": "Once upon a time, there was a",
+              "generated": " girl who lived in a small village in the north of Greece. Her name was Lili. She had been born into",
+              "coherence_score": 88.14814814814814
+            },
+            {
+              "prompt": "The scientist discovered that",
+              "generated": " 20% of the samples have a defect, and the remaining samples can be classified into 3 categories: go",
+              "coherence_score": 91.42240832381677
+            },
+            {
+              "prompt": "In the future, technology will",
+              "generated": " become increasingly widespread. As a result, people may no longer need to carry a wallet or use cre",
+              "coherence_score": 93.69625042999657
+            },
+            {
+              "prompt": "The most important thing in life is",
+              "generated": " to be able to work in the same way, without the need for a break.\nDoes this even make sense?\nA. Cor",
+              "coherence_score": 94.74869173664354
+            },
+            {
+              "prompt": "When you make a mistake, you should",
+              "generated": " ( ) A. apologize and compensate B. express regret and compensate C. express regret and compensate D",
+              "coherence_score": 76.04697226938313
+            }
+          ]
+        }
+      }
+    },
+    {
+      "config": "4_layers_removed",
+      "n_removed": 4,
+      "layers_removed": [
+        5,
+        12,
+        4,
+        6
+      ],
+      "completion_accuracy": 30.0,
+      "hellaswag_accuracy": 60.0,
+      "coherence_score": 79.08604386423936,
+      "details": {
+        "completion": {
+          "accuracy": 30.0,
+          "correct": 3,
+          "total": 10,
+          "details": [
+            {
+              "prompt": "The capital of France is",
+              "generated": "the largest in the world. the population is the la",
+              "expected": [
+                "Paris"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Water freezes at",
+              "generated": "a rate of 10% for the next two weeks. the first we",
+              "expected": [
+                "0",
+                "32",
+                "zero",
+                "degrees"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The sun rises in the",
+              "generated": "100th percentile when i was born in the 1970s and",
+              "expected": [
+                "east",
+                "morning"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Two plus two equals",
+              "generated": "double\n\nwhat is the correct answer?\nwhat is the an",
+              "expected": [
+                "four",
+                "4"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "The largest planet in our solar system is",
+              "generated": "the higgs boson. the higgs boson is the most impor",
+              "expected": [
+                "Jupiter"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Dogs are known for their",
+              "generated": "ability to make a variety of sounds. there is a 10",
+              "expected": [
+                "loyalty",
+                "bark",
+                "smell",
+                "hearing"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "The opposite of hot is",
+              "generated": "cold, but the opposite of cold is cold. the opposi",
+              "expected": [
+                "cold"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "Humans need oxygen to",
+              "generated": "breathe, and we need oxygen to breathe. we need ox",
+              "expected": [
+                "breathe",
+                "live",
+                "survive"
+              ],
+              "correct": true
+            },
+            {
+              "prompt": "The color of the sky on a clear day is",
+              "generated": "a clear day. a clear day is a clear sky. a clear s",
+              "expected": [
+                "blue"
+              ],
+              "correct": false
+            },
+            {
+              "prompt": "Einstein is famous for his theory of",
+              "generated": "the theory of the theory of the theory of the theo",
+              "expected": [
+                "relativity"
+              ],
+              "correct": false
+            }
+          ]
+        },
+        "hellaswag": {
+          "accuracy": 60.0,
+          "correct": 3,
+          "total": 5,
+          "details": [
+            {
+              "context": "A person is making a sandwich. They put bread on a...",
+              "predicted": "threw the bread out the window",
+              "correct": "added some cheese and lettuce",
+              "is_correct": "False"
+            },
+            {
+              "context": "The student opened their textbook to study for the...",
+              "predicted": "started reading the chapter ca",
+              "correct": "started reading the chapter ca",
+              "is_correct": "True"
+            },
+            {
+              "context": "It started raining heavily outside. The person gra...",
+              "predicted": "the clouds from the sky",
+              "correct": "an umbrella before going out",
+              "is_correct": "False"
+            },
+            {
+              "context": "The chef was preparing dinner in the kitchen. They...",
+              "predicted": "put them in a pot on the stove",
+              "correct": "put them in a pot on the stove",
+              "is_correct": "True"
+            },
+            {
+              "context": "A baby was crying because it was hungry. The mothe...",
+              "predicted": "gave it a bottle of milk",
+              "correct": "gave it a bottle of milk",
+              "is_correct": "True"
+            }
+          ]
+        },
+        "coherence": {
+          "avg_coherence": 79.08604386423936,
+          "generations": [
+            {
+              "prompt": "Once upon a time, there was a",
+              "generated": " time. The first time that a person\u2019s history begins with a time when there was a time, if the numbe",
+              "coherence_score": 93.51951306838525
+            },
+            {
+              "prompt": "The scientist discovered that",
+              "generated": " after the test, he was able to get the test back, and it was completed in 6 months. After he had be",
+              "coherence_score": 83.33333333333334
+            },
+            {
+              "prompt": "In the future, technology will",
+              "generated": " make our life easier.\nA. \u2460\u2461\u2462\u2463\u2464\u2465\u2460\u2461\u2462\u2463\u2464\u2465\u2460\u2461\u2462\u2463\u2464\u2465\u2460\u2461\u2462",
+              "coherence_score": 86.66666666666667
+            },
+            {
+              "prompt": "The most important thing in life is",
+              "generated": ": __________(a)",
+              "coherence_score": 44.44444444444444
+            },
+            {
+              "prompt": "When you make a mistake, you should",
+              "generated": " _____\nThere are three states of the state of health: healthy, healthy, and healthy\nYou can't get a ",
+              "coherence_score": 87.46626180836708
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
