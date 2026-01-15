@@ -1,0 +1,105 @@
+{
+  "model_name": "Qwen2.5-1.5B-Instruct",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "benchmark": "language",
+  "mode": "manual",
+  "generated_at": "2026-01-15T14:57:40.789001",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 67.21416316902534,
+      "details": {
+        "perplexity": 12.384008108598493,
+        "avg_loss": 2.5164059716112472,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The capital of Italy is Rome. What is the capital of Spain?\nA) Madrid\nB) Barcelona\nC) Seville\nD"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on the moon. Since then, many countries have sent various types of spacecraft to explore space and collect valuable data. Suppose a spacecraft is orbit"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that focuses on the development and application of algorithms to enable machines to learn from data, without being explicitly programmed. It involves using statistical models to"
+          }
+        ]
+      }
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 57.397269702001516,
+      "details": {
+        "perplexity": 26.308192436571503,
+        "avg_loss": 3.2698803901672364,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. What is the answer to this question?\nWhat is the capital city of France? The capital city of France is Paris. This answer directly addresses"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on the moon. Since then, we have sent many spacecraft to explore the universe and discovered a lot of things about it. However, there"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data. It has been used in many applications, including image and speech recognition, natural language processing, and autonomous"
+          }
+        ]
+      }
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 52.90441915057818,
+      "details": {
+        "perplexity": 37.140923227737375,
+        "avg_loss": 3.614719413659152,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The French are known for their love of food, wine and cheese. They also have a very strong sense of humour.\nThis is the story"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on Mars. In the same year, a Martian named Zeb was born. If we consider that each Martian year is equivalent to two Earth"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data. It can be used in various fields, such as image recognition and speech recognition.\nA. Correct\n"
+          }
+        ]
+      }
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 43.39154347657682,
+      "details": {
+        "perplexity": 77.08121484651535,
+        "avg_loss": 4.344859604274525,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a precious resource, and it's important to properly manage, protect, and utilize it for future generations. The French people have the right to an effective"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first and foremost celebrated the release of a new album by the legendary hip-hop group. The album was titled \"The Black Album\" and featured tracks from artists"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that has been used in the past few years to solve many real-world problems. It is an area where data scientists and machine learning practitioners are"
+          }
+        ]
+      }
+    }
+  ]
+}

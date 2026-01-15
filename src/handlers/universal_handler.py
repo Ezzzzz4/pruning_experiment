@@ -429,6 +429,11 @@ class UniversalHandler:
         
         setattr(parent, parts[-1], new_layers)
         
+        # CRITICAL: Update the component info to point to the NEW layer list
+        # Otherwise get_layers() will return the old, detached list
+        self.components[component].layers = new_layers
+        self.components[component].count = len(new_layers)
+        
         if self.verbose:
             print(f"✓ Removed {len(layer_indices)} layers from {component}: {sorted(layer_indices)}")
             print(f"  {component} now has {len(new_layers)} layers")

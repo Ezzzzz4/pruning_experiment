@@ -1,25 +1,19 @@
 """
 Model Handlers for Universal Layer Pruning
 
-Provides handlers for different neural network architectures:
-- UniversalHandler: Works with most architectures (auto-discovery)
-- ResNetLayerPruner: For ResNet's layer1/2/3/4 structure
-- YOLOHandler: For YOLO's backbone/neck/head structure
+Provides handlers for neural network layer manipulation:
+- UniversalHandler: Works with most LLM architectures (auto-discovery)
 
 Usage:
-    from src.handlers import create_handler
+    from src.handlers import UniversalHandler
     
-    handler = create_handler(model)  # Auto-selects appropriate handler
-    results = handler.analyze_all(dataloader)
+    handler = UniversalHandler(model)
+    handler.remove_layers('main', [3, 4, 5])
 """
 
 from src.handlers.universal_handler import UniversalHandler, create_handler
-from src.handlers.resnet_handler import ResNetLayerPruner
-from src.handlers.yolo_handler import YOLOHandler
 
 __all__ = [
     'UniversalHandler',
     'create_handler',
-    'ResNetLayerPruner', 
-    'YOLOHandler',
 ]
