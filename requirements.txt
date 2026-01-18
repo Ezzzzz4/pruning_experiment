@@ -1,27 +1,20 @@
-# Core dependencies
+# Core ML framework
 torch>=2.0.0
 transformers>=4.30.0
+
+# Vision models  
 torchvision>=0.15.0
 
-# Data processing
-numpy>=1.24.0
-pandas>=2.0.0
+# Data handling
 datasets>=2.14.0
+numpy>=1.24.0
 
 # Visualization
 matplotlib>=3.7.0
 seaborn>=0.12.0
 
-# Statistical analysis
-scipy>=1.11.0
-
 # Utilities
 tqdm>=4.65.0
-PyYAML>=6.0
 
-# Experiment tracking (optional)
-wandb>=0.15.0
-
-# Testing
-pytest>=7.4.0
-pytest-cov>=4.1.0
+# Additional dependencies for specific models
+einops>=0.7.0  # Required by Jina CLIP v2

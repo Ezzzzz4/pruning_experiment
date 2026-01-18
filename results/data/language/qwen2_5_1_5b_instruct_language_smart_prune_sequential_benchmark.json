@@ -2,8 +2,8 @@
   "model_name": "Qwen2.5-1.5B-Instruct",
   "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
   "benchmark": "language",
-  "mode": "manual",
-  "generated_at": "2026-01-15T14:57:40.789001",
+  "mode": "smart_prune_sequential",
+  "generated_at": "2026-01-18T12:37:23.158995",
   "results": [
     {
       "config": "baseline",
@@ -27,7 +27,8 @@
             "completion": "Machine learning is a field of artificial intelligence that focuses on the development and application of algorithms to enable machines to learn from data, without being explicitly programmed. It involves using statistical models to"
           }
         ]
-      }
+      },
+      "degradation": false
     },
     {
       "config": "1L_removed",
@@ -51,7 +52,8 @@
             "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data. It has been used in many applications, including image and speech recognition, natural language processing, and autonomous"
           }
         ]
-      }
+      },
+      "degradation": true
     },
     {
       "config": "2L_removed",
@@ -75,7 +77,33 @@
             "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data. It can be used in various fields, such as image recognition and speech recognition.\nA. Correct\n"
           }
         ]
-      }
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 49.053283692253366,
+      "details": {
+        "perplexity": 49.91417265502062,
+        "avg_loss": 3.9103049835738015,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a city that has been home to many great minds. The French Revolution, the French Enlightenment and the French Wars have all left their mark on history.\n"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot in at the site of a new drug. The drug was not approved by the FDA and had no proven efficacy.\n\nDoes this future result in"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that uses statistical techniques to analyze data and evaluate the results. It has been used for predictive modeling, image recognition, and natural language processing.\nWhat"
+          }
+        ]
+      },
+      "degradation": true
     },
     {
       "config": "4L_removed",
@@ -99,7 +127,8 @@
             "completion": "Machine learning is a field of artificial intelligence that has been used in the past few years to solve many real-world problems. It is an area where data scientists and machine learning practitioners are"
           }
         ]
-      }
+      },
+      "degradation": true
     }
   ]
 }

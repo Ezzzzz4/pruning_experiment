@@ -579,7 +579,7 @@ def generate_cross_comparison(base_dir: Path = Path("results")) -> None:
 
 def main():
     parser = argparse.ArgumentParser(description="Visualization Generator")
-    parser.add_argument('--type', choices=['language', 'reasoning', 'comparison', 'all'],
+    parser.add_argument('--type', choices=['language', 'reasoning', 'vision', 'comparison', 'all'],
                         default='all', help="Type of visualizations to generate")
     args = parser.parse_args()
     
@@ -590,6 +590,9 @@ def main():
     
     if args.type in ['reasoning', 'all']:
         generate_for_type('reasoning', base_dir)
+    
+    if args.type in ['vision', 'all']:
+        generate_for_type('vision', base_dir)
     
     if args.type in ['comparison', 'all']:
         generate_cross_comparison(base_dir)

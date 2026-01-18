@@ -1,0 +1,159 @@
+{
+  "model_name": "Qwen2.5-0.5B",
+  "model_id": "Qwen/Qwen2.5-0.5B",
+  "benchmark": "language",
+  "mode": "smart_prune_bi",
+  "generated_at": "2026-01-18T12:27:35.981274",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 67.12960622257708,
+      "details": {
+        "perplexity": 12.464641513197918,
+        "avg_loss": 2.5228959570912752,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. It is the largest city in Europe and the second largest in the world. It is also the capital of France, the second largest country in"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The moon is approximately 384,400 kilometers away from Earth. If a spaceship travels at a speed of"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that uses statistical methods to develop computer programs that can learn from data and make predictions or decisions. It is a subset of artificial intelligence and is"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 66.95646429180792,
+      "details": {
+        "perplexity": 12.631391334544022,
+        "avg_loss": 2.536185091383317,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is ______.\nA. Paris\nB. London\nC. Rome\nD. Berlin\n答案:\nA\n\nThe capital of France is ______.\nA"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The moon is 384,400 kilometers away from the Earth. If the moon is moving at a constant"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that uses algorithms to enable machines to learn from data and improve their performance without being explicitly programmed. It is a subset of artificial intelligence that focuses"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 58.06755025502498,
+      "details": {
+        "perplexity": 24.9889682259299,
+        "avg_loss": 3.2184344565167144,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the country of France. The capital of France is the capital of France is the capital of France is the capital of France is the capital"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered the first moon landing. In 1970, the United States and the Soviet Union signed a treaty to end the Cold War. In"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that focuses on the development of algorithms that can learn from data and improve their performance. The field of machine learning is a branch of artificial intelligence that"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 52.3393740990764,
+      "details": {
+        "perplexity": 38.787119663272925,
+        "avg_loss": 3.6580882240744197,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the largest country in the world. The capital of France is the largest country in the world. Which of the following is the most appropriate for the sentence"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered the planet, then the first planet was discovered. [S] 1969, the first planet was discovered. 201"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of research, and it is a field of research, and it is a field of research, and it is a field of research, and it is a"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 44.331588030793796,
+      "details": {
+        "perplexity": 71.7156158637176,
+        "avg_loss": 4.27270851836485,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the largest in the world. The population is the largest in the world. The population is the largest in the world. The population is the largest in"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first, and in the year 1970, 1970. In the year 1980, 198"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of technology that has been used for a long time. The field of machine learning is a field of technology that has been used to create a field of technology"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "5L_removed",
+      "layers_removed": 5,
+      "score": 41.93796244518257,
+      "details": {
+        "perplexity": 86.17896060925958,
+        "avg_loss": 4.456426071419435,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is worth $100$ dollars. The capital of France is worth $100$ dollars. The capital of France is worth $10"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first, 1969, New York City, 1970, 1970, 1970, "
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of scientific inquiry, and the scientific method is the basis for the scientific community to develop new research methods. A scientific method is a way to do research.\n"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}

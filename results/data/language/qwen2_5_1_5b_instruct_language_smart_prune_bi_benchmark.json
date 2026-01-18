@@ -1,0 +1,159 @@
+{
+  "model_name": "Qwen2.5-1.5B-Instruct",
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "benchmark": "language",
+  "mode": "smart_prune_bi",
+  "generated_at": "2026-01-18T12:47:49.151759",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 67.21416316902534,
+      "details": {
+        "perplexity": 12.384008108598493,
+        "avg_loss": 2.5164059716112472,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The capital of Italy is Rome. What is the capital of Spain?\nA) Madrid\nB) Barcelona\nC) Seville\nD"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on the moon. Since then, many countries have sent various types of spacecraft to explore space and collect valuable data. Suppose a spacecraft is orbit"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that focuses on the development and application of algorithms to enable machines to learn from data, without being explicitly programmed. It involves using statistical models to"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 65.95959409553362,
+      "details": {
+        "perplexity": 13.635786628641814,
+        "avg_loss": 2.6126977065030266,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris, and the largest city in France by population is also Paris. Is this statement true or false?\nTo determine whether the given statement is true or"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on the moon. Since then, we have sent more than 50 spacecraft to explore the moon and its surrounding space environment. The Chang"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data and make predictions or decisions. It has been widely used in various fields such as finance, healthcare, marketing"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 52.90441915057818,
+      "details": {
+        "perplexity": 37.140923227737375,
+        "avg_loss": 3.614719413659152,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The French are known for their love of food, wine and cheese. They also have a very strong sense of humour.\nThis is the story"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot on Mars. In the same year, a Martian named Zeb was born. If we consider that each Martian year is equivalent to two Earth"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of artificial intelligence that uses algorithms to learn from data. It can be used in various fields, such as image recognition and speech recognition.\nA. Correct\n"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 49.053283692253366,
+      "details": {
+        "perplexity": 49.91417265502062,
+        "avg_loss": 3.9103049835738015,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a city that has been home to many great minds. The French Revolution, the French Enlightenment and the French Wars have all left their mark on history.\n"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first set foot in at the site of a new drug. The drug was not approved by the FDA and had no proven efficacy.\n\nDoes this future result in"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that uses statistical techniques to analyze data and evaluate the results. It has been used for predictive modeling, image recognition, and natural language processing.\nWhat"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 47.259294282207705,
+      "details": {
+        "perplexity": 57.282705780559176,
+        "avg_loss": 4.047998759325813,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. What is the capital of Germany?  A. Berlin B. Washington C. Brussels D. Strasbourg E. Bonn F. The"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first observed DDT in action. Given a hint for this problem?\n\nTo solve the following logic puzzle:\n\nTo solve the given logic puzzle, we need to"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that has been around for decades, but it’s still growing. In this paper we will discuss the use of machine learning in the context of data"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "5L_removed",
+      "layers_removed": 5,
+      "score": 47.078807535308606,
+      "details": {
+        "perplexity": 58.08175744447179,
+        "avg_loss": 4.061851629088907,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a city in which the French Revolution took place. The French Revolution was a major event that occurred during this period, and it led to the rise of"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered that there was a planet called \"Earth\". Since then, they say, \"humankind\" has taken over the surface. \n\nThe discovery of"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that uses statistical techniques to analyze data and patterns in order to uncover the unknown correlations. It has been used for pattern recognition, anomaly detection, classification"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}

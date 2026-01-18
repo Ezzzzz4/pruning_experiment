@@ -1,0 +1,134 @@
+{
+  "model_name": "TinyLlama-1.1B-Chat-v1.0",
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "benchmark": "language",
+  "mode": "smart_prune_sequential",
+  "generated_at": "2026-01-18T12:44:41.428265",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 50.914686817731926,
+      "details": {
+        "perplexity": 43.26902469268801,
+        "avg_loss": 3.76743701394782,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris.\n\n2. B. The capital of Germany is Berlin.\n\n3. C. The capital of the United States is Washington,"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The Apollo 11 mission was the first to do so, and it was a huge accomplishment for the United"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that involves the use of algorithms and statistical models to analyze large datasets and make predictions. It is a powerful tool for data analysis and has many"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 48.346962834837356,
+      "details": {
+        "perplexity": 52.694817592698215,
+        "avg_loss": 3.9645171128123637,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The population of Paris is approximately 2.2 million. The population of the entire metropolitan area of Paris is approximately 13 million"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon.\n\n2. The Moon Landing: The Moon Landing was a historic event that took place on July 2"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that uses algorithms to learn from data. It is a subset of artificial intelligence, which is the study of intelligent machines. Machine learning is"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 47.57774225903404,
+      "details": {
+        "perplexity": 55.89958598863335,
+        "avg_loss": 4.023556973847998,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the largest city in the world. It is the capital of the most populous country in Europe. It is the capital of the most populous country"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The moon was a natural wonder, with a surface that was covered in a thick layer of dust. The moon was a"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of research that deals with the development of algorithms and models that can learn from data. The goal of machine learning is to improve the accuracy of predictions and"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 41.046438478108925,
+      "details": {
+        "perplexity": 92.28236528989773,
+        "avg_loss": 4.5248530646404586,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the largest in Europe and the second largest in the European Union. The population of the country is 46,577, and the smallest"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first began to use the Internet. The of a single-on switches, as they was the 1st 20th-century, was"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of machine learning that deals with the learning of the machine.\n\nThe machine learning is a field of machine learning that deals with the learning of"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 38.828737905855405,
+      "details": {
+        "perplexity": 109.4062342198305,
+        "avg_loss": 4.695067873920303,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a city that has a rich history and culture. The city is known for its rich history and culture, and the city's rich history and culture"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered the concept of the universe. The universe was created in the year 1946, and the concept of the universe was first discovered in"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that is used to learn and practice a new language.\n\nThe term machine learning is a field of study that is used to learn and practice"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}

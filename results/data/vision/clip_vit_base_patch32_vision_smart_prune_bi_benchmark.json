@@ -1,0 +1,507 @@
+{
+  "model_name": "clip-vit-base-patch32",
+  "model_id": "openai/clip-vit-base-patch32",
+  "benchmark": "vision",
+  "mode": "smart_prune_bi",
+  "generated_at": "2026-01-17T23:26:01.224794",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 89.0,
+      "details": {
+        "correct": 89,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 8,
+            "true_class": "ship",
+            "pred_class": "ship",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 9,
+            "true_class": "truck",
+            "pred_class": "truck",
+            "correct": true
+          },
+          {
+            "true_label": 7,
+            "pred_label": 7,
+            "true_class": "horse",
+            "pred_class": "horse",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 6,
+            "pred_label": 6,
+            "true_class": "frog",
+            "pred_class": "frog",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 2,
+            "pred_label": 2,
+            "true_class": "bird",
+            "pred_class": "bird",
+            "correct": true
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 9,
+            "true_class": "truck",
+            "pred_class": "truck",
+            "correct": true
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 89.0,
+      "details": {
+        "correct": 89,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 8,
+            "true_class": "ship",
+            "pred_class": "ship",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 9,
+            "true_class": "truck",
+            "pred_class": "truck",
+            "correct": true
+          },
+          {
+            "true_label": 7,
+            "pred_label": 7,
+            "true_class": "horse",
+            "pred_class": "horse",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 6,
+            "pred_label": 6,
+            "true_class": "frog",
+            "pred_class": "frog",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 2,
+            "pred_label": 2,
+            "true_class": "bird",
+            "pred_class": "bird",
+            "correct": true
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 9,
+            "true_class": "truck",
+            "pred_class": "truck",
+            "correct": true
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": false
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 56.99999999999999,
+      "details": {
+        "correct": 57,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 8,
+            "true_class": "ship",
+            "pred_class": "ship",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 2,
+            "true_class": "dog",
+            "pred_class": "bird",
+            "correct": false
+          },
+          {
+            "true_label": 9,
+            "pred_label": 8,
+            "true_class": "truck",
+            "pred_class": "ship",
+            "correct": false
+          },
+          {
+            "true_label": 7,
+            "pred_label": 7,
+            "true_class": "horse",
+            "pred_class": "horse",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 6,
+            "pred_label": 6,
+            "true_class": "frog",
+            "pred_class": "frog",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 5,
+            "true_class": "dog",
+            "pred_class": "dog",
+            "correct": true
+          },
+          {
+            "true_label": 2,
+            "pred_label": 2,
+            "true_class": "bird",
+            "pred_class": "bird",
+            "correct": true
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 1,
+            "true_class": "truck",
+            "pred_class": "car",
+            "correct": false
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 51.0,
+      "details": {
+        "correct": 51,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 0,
+            "true_class": "ship",
+            "pred_class": "plane",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 2,
+            "true_class": "dog",
+            "pred_class": "bird",
+            "correct": false
+          },
+          {
+            "true_label": 9,
+            "pred_label": 9,
+            "true_class": "truck",
+            "pred_class": "truck",
+            "correct": true
+          },
+          {
+            "true_label": 7,
+            "pred_label": 7,
+            "true_class": "horse",
+            "pred_class": "horse",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 9,
+            "true_class": "dog",
+            "pred_class": "truck",
+            "correct": false
+          },
+          {
+            "true_label": 6,
+            "pred_label": 6,
+            "true_class": "frog",
+            "pred_class": "frog",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 4,
+            "true_class": "dog",
+            "pred_class": "deer",
+            "correct": false
+          },
+          {
+            "true_label": 2,
+            "pred_label": 2,
+            "true_class": "bird",
+            "pred_class": "bird",
+            "correct": true
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 1,
+            "true_class": "truck",
+            "pred_class": "car",
+            "correct": false
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 16.0,
+      "details": {
+        "correct": 16,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 6,
+            "true_class": "ship",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 6,
+            "true_class": "dog",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 9,
+            "pred_label": 1,
+            "true_class": "truck",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 7,
+            "pred_label": 4,
+            "true_class": "horse",
+            "pred_class": "deer",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 1,
+            "true_class": "dog",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 6,
+            "pred_label": 4,
+            "true_class": "frog",
+            "pred_class": "deer",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 4,
+            "true_class": "dog",
+            "pred_class": "deer",
+            "correct": false
+          },
+          {
+            "true_label": 2,
+            "pred_label": 6,
+            "true_class": "bird",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 1,
+            "true_class": "truck",
+            "pred_class": "car",
+            "correct": false
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": true
+    },
+    {
+      "config": "5L_removed",
+      "layers_removed": 5,
+      "score": 19.0,
+      "details": {
+        "correct": 19,
+        "total": 100,
+        "predictions": [
+          {
+            "true_label": 8,
+            "pred_label": 6,
+            "true_class": "ship",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 6,
+            "true_class": "dog",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 9,
+            "pred_label": 1,
+            "true_class": "truck",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 7,
+            "pred_label": 1,
+            "true_class": "horse",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 5,
+            "pred_label": 1,
+            "true_class": "dog",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 6,
+            "pred_label": 6,
+            "true_class": "frog",
+            "pred_class": "frog",
+            "correct": true
+          },
+          {
+            "true_label": 5,
+            "pred_label": 1,
+            "true_class": "dog",
+            "pred_class": "car",
+            "correct": false
+          },
+          {
+            "true_label": 2,
+            "pred_label": 6,
+            "true_class": "bird",
+            "pred_class": "frog",
+            "correct": false
+          },
+          {
+            "true_label": 1,
+            "pred_label": 1,
+            "true_class": "car",
+            "pred_class": "car",
+            "correct": true
+          },
+          {
+            "true_label": 9,
+            "pred_label": 6,
+            "true_class": "truck",
+            "pred_class": "frog",
+            "correct": false
+          }
+        ],
+        "method": "zero_shot"
+      },
+      "degradation": true
+    }
+  ]
+}

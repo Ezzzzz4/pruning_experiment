@@ -1,0 +1,184 @@
+{
+  "model_name": "gpt2",
+  "model_id": "gpt2",
+  "benchmark": "language",
+  "mode": "smart_prune_sequential",
+  "generated_at": "2026-01-18T12:13:25.344887",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 46.87714256497321,
+      "details": {
+        "perplexity": 58.98776134580946,
+        "avg_loss": 4.077329987571353,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the French Republic, and the capital of the French Republic is the capital of the French Republic.\n\nThe French Republic is the capital"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first began to colonize the planet. The first humans to colonize the planet were the first humans to colonize the planet.\n\nThe first humans"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that has been around for a long time. It is a field that has been around for a long time. It is a field that has been"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 46.89467848909742,
+      "details": {
+        "perplexity": 58.90842124032753,
+        "avg_loss": 4.0759840556553435,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of France.\n\nThe capital of France is the capital of France.\n\nThe capital of France is the capital of France.\n"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first became aware of the existence of the \"dark side\" and began to investigate the possibility of the existence of the \"dark side\".\n\nThe first"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of research that has been around for a long time. It is a field that has been around for a long time. It is a field that has been"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 45.66580296765164,
+      "details": {
+        "perplexity": 64.73511160575724,
+        "avg_loss": 4.170303737549554,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the French capital of the United Kingdom.\n\nThe capital of the United Kingdom is the capital of the United Kingdom.\n\nThe"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first became the dominant species of the species Homo sapiens.\n\nThe first Homo sapiens was a species of the genus Homo sapiens.\n\n"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of the most important and most important to the human mind.\n\nThe most important thing to remember is that you are not just a person, you are"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 43.14513958445376,
+      "details": {
+        "perplexity": 78.55286219432298,
+        "avg_loss": 4.363771801903134,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the capital of the country, and the capital of the country, and the capital of the country, and the capital of the country,"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first became the first to be known as the \"human\" in the English language.\n\nThe first human was known as the \"human\" in the"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of learning.\n\nThe first thing that I want to say is that we are not a field of learning.\n\nThe first thing that I want"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 40.13708084147142,
+      "details": {
+        "perplexity": 98.9533812323006,
+        "avg_loss": 4.594648842584519,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the capital of the capital of the capital of the capital of the capital of the capital of the capital of the capital of the capital of"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first, the first time, the first time, the first time, the first time, the first time, the first time, the first time, the"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of the field of the field of the field of the field of the field of the field of the field of the field of the field of the field of"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "5L_removed",
+      "layers_removed": 5,
+      "score": 37.680197496237994,
+      "details": {
+        "perplexity": 119.48867632756374,
+        "avg_loss": 4.783221608116513,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the capital of the French capital of the French capital of the French capital of the French capital of the French capital of the French capital of"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first.\n\nThe first time I was a man who was a man who was a man who was a man who was a man who was a man"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of the field of the field of the field is a field of the field of the field of the field is a field of the field of the field is"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "6L_removed",
+      "layers_removed": 6,
+      "score": 31.926174818267853,
+      "details": {
+        "perplexity": 185.8349974569395,
+        "avg_loss": 5.224859169551304,
+        "total_tokens": 630,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a country that is a country that is a country that is a country that you are not a country that you are not a country that you are not"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first humans were the first humans to be a human-human at the same time.\n\nThe first human, the second time was the first human to"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of the same time as a new class of the class of the class of the class of the class of the class.\n\nThe class of the class"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}

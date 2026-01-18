@@ -35,18 +35,36 @@ from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, AutoModel, AutoProcessor
 from src.handlers import UniversalHandler
 from experiments.benchmarks import get_benchmark, list_benchmarks
 
 
+# Vision model identifiers
+VISION_MODEL_KEYWORDS = ['clip', 'siglip', 'vit', 'resnet', 'efficientnet', 'deit', 'swin', 'dinov2', 'dino', 'beit', 'jina']
+
+
+def is_vision_model(model_id: str) -> bool:
+    """Check if model_id is a vision model."""
+    model_id_lower = model_id.lower()
+    return any(kw in model_id_lower for kw in VISION_MODEL_KEYWORDS)
+
+
 def load_model(model_id: str, device: str = 'cuda'):
-    """Load model and tokenizer from HuggingFace."""
+    """Load model and tokenizer/processor from HuggingFace."""
     print(f"Loading model: {model_id}")
     
+    if is_vision_model(model_id):
+        return load_vision_model(model_id, device)
+    else:
+        return load_language_model(model_id, device)
+
+
+def load_language_model(model_id: str, device: str = 'cuda'):
+    """Load a language model (CausalLM) and tokenizer."""
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
-        dtype=torch.float16 if device == 'cuda' else torch.float32,
+        torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
         trust_remote_code=True
     ).to(device)
     
@@ -55,6 +73,45 @@ def load_model(model_id: str, device: str = 'cuda'):
         tokenizer.pad_token = tokenizer.eos_token
     
     return model, tokenizer
+
+
+def load_vision_model(model_id: str, device: str = 'cuda'):
+    """Load a vision model and processor."""
+    from transformers import AutoModelForImageClassification, AutoProcessor, AutoModel
+    
+    # Check for models that need AutoModel (not classification head)
+    # - Zero-shot models: CLIP, SigLIP, Jina-CLIP
+    # - Feature extraction models: DINOv2, ViT (non-classification), Swin (non-classification)
+    needs_automodel = any(x in model_id.lower() for x in ['clip', 'siglip', 'dinov2', 'dino', 'jina'])
+    
+    if needs_automodel:
+        print("  Loading as Zero-Shot model (AutoModel)...")
+        # Jina CLIP uses bfloat16 internally, others use float16
+        if 'jina' in model_id.lower():
+            dtype = torch.bfloat16 if device == 'cuda' else torch.float32
+        else:
+            dtype = torch.float16 if device == 'cuda' else torch.float32
+        model = AutoModel.from_pretrained(
+            model_id,
+            torch_dtype=dtype,
+            trust_remote_code=True
+        ).to(device)
+    else:
+        print("  Loading as Classification model (AutoModelForImageClassification)...")
+        model = AutoModelForImageClassification.from_pretrained(
+            model_id,
+            torch_dtype=torch.float16 if device == 'cuda' else torch.float32,
+            trust_remote_code=True
+        ).to(device)
+    
+    try:
+        processor = AutoProcessor.from_pretrained(model_id, trust_remote_code=True)
+    except:
+        # Fallback for models that use FeatureExtractor (like ResNet)
+        from transformers import AutoFeatureExtractor
+        processor = AutoFeatureExtractor.from_pretrained(model_id, trust_remote_code=True)
+    
+    return model, processor
 
 
 def run_benchmark_config(
@@ -92,7 +149,8 @@ def smart_prune(
     device: str,
     greedy: bool,
     threshold: int = 4,
-    tolerance: float = 0.05
+    tolerance: float = 0.05,
+    strategy: str = 'sequential'
 ) -> List[Dict]:
     """
     Automatically prune layers until performance degrades N times.
@@ -100,6 +158,7 @@ def smart_prune(
     Args:
         threshold: Number of consecutive degradations before stopping
         tolerance: Percentage drop considered a "degradation" (default 5%)
+        strategy: 'sequential' (default) or 'bi' (Block Influence)
     
     Returns:
         List of results for each configuration tested
@@ -109,17 +168,124 @@ def smart_prune(
     layer_idx = 0
     baseline_score = None
     
-    print(f"\nSmart Pruning Mode (threshold={threshold}, tolerance={tolerance*100}%)")
+    print(f"\nSmart Pruning Mode (strategy={strategy}, threshold={threshold}, tolerance={tolerance*100}%)")
     print("=" * 60)
+    
+    # Pre-calculate BI scores if needed
+    pruning_order = []
+    if strategy == 'bi':
+        print("\nComputing Block Influence (BI) scores for pruning order...")
+        # Load model for analysis
+        model, tokenizer = load_model(model_id, device)
+        handler = UniversalHandler(model, verbose=False)
+        
+        # Determine component
+        components = handler.list_components()
+        if 'main' in components:
+            component_name = 'main'
+        elif 'vision' in components:
+            component_name = 'vision'
+        elif 'encoder' in components:
+            component_name = 'encoder'
+        else:
+            component_name = components[0] if components else 'main'
+            
+        print(f"  Analyzing component: {component_name}")
+        
+        # Create a simple dataloader for BI calculation
+        # We assume dataset is iterable. For BI we need a cleaner loader usually, 
+        # but UniversalHandler.compute_bi_scores handles raw dataloaders.
+        # If dataset is a list/Dataset, wrap it.
+        if not isinstance(dataset, torch.utils.data.DataLoader):
+            # Handle list of strings (Language benchmark)
+            if isinstance(dataset, list) and len(dataset) > 0 and isinstance(dataset[0], str):
+                print("  Tokenizing text dataset for BI calculation...")
+                # Limit samples for speed
+                samples = dataset[:20]
+                encodings = tokenizer(
+                    samples,
+                    return_tensors='pt',
+                    padding='max_length',
+                    truncation=True,
+                    max_length=128
+                )
+                
+                class TensorDataset(torch.utils.data.Dataset):
+                    def __init__(self, encodings):
+                        self.encodings = encodings
+                    def __len__(self):
+                        return len(self.encodings['input_ids'])
+                    def __getitem__(self, idx):
+                        return {k: v[idx] for k, v in self.encodings.items()}
+                
+                bi_loader = torch.utils.data.DataLoader(TensorDataset(encodings), batch_size=1)
+            
+            # Handle list of dicts (Vision benchmark)
+            elif isinstance(dataset, list) and len(dataset) > 0 and isinstance(dataset[0], dict):
+                print("  Processing vision dataset for BI calculation...")
+                samples = dataset[:20]  # Limit for speed
+                
+                class VisionDataset(torch.utils.data.Dataset):
+                    def __init__(self, samples, processor):
+                        self.samples = samples
+                        self.processor = processor
+                    
+                    def __len__(self):
+                        return len(self.samples)
+                    
+                    def __getitem__(self, idx):
+                        sample = self.samples[idx]
+                        image = sample['image']
+                        # Process image using tokenizer (which is actually a processor for vision)
+                        inputs = self.processor(images=image, return_tensors='pt')
+                        # Remove batch dimension added by processor
+                        return {k: v.squeeze(0) for k, v in inputs.items()}
+                
+                bi_loader = torch.utils.data.DataLoader(
+                    VisionDataset(samples, tokenizer),
+                    batch_size=1,
+                    collate_fn=lambda batch: {k: torch.stack([b[k] for b in batch]) for k in batch[0].keys()}
+                )
+            else:
+                # Fallback for datasets that might already emit tensors or dicts
+                bi_loader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True)
+        else:
+            bi_loader = dataset
+
+        # Compute scores
+        # Limit samples for speed
+        bi_scores = handler.compute_bi_scores(bi_loader, component=component_name, num_samples=20)
+        
+        # Sort layers by BI (ascending = lowest/most redundant first)
+        sorted_layers = sorted(bi_scores.items(), key=lambda x: x[1])
+        pruning_order = [idx for idx, score in sorted_layers]
+        
+        print(f"  BI Pruning Order (Lowest to Highest): {pruning_order}")
+        
+        # Cleanup
+        del model, handler
+        torch.cuda.empty_cache()
     
     while degradations < threshold:
         # Load fresh model for each config
         model, tokenizer = load_model(model_id, device)
         handler = UniversalHandler(model, verbose=False)
-        n_layers = len(handler.get_layers('main'))
+        
+        # Auto-detect the primary component to prune
+        components = handler.list_components()
+        if 'main' in components:
+            component_name = 'main'
+        elif 'vision' in components:
+            component_name = 'vision'
+        elif 'encoder' in components:
+            component_name = 'encoder'
+        else:
+            component_name = components[0] if components else 'main'
+        
+        n_layers = len(handler.get_layers(component_name))
         
         # Check if we've exceeded available layers
-        if layer_idx >= n_layers - 3:  # Keep at least 3 layers
+        if layer_idx >= n_layers - 1:  # Keep at least 1 layer
             print(f"  Reached maximum pruning depth ({layer_idx} layers)")
             break
         
@@ -128,10 +294,18 @@ def smart_prune(
         
         # Remove layers (use inplace=True to modify the model directly)
         if layer_idx > 0:
-            layers_to_remove = list(range(3, 3 + layer_idx))
-            handler.remove_layers('main', layers_to_remove, inplace=True)
+            if strategy == 'bi':
+                # Remove top N redundant layers based on BI order
+                # pruning_order contains indices [least_important, ..., most_important]
+                # We remove the first 'layer_idx' layers from this list
+                layers_to_remove = pruning_order[:layer_idx]
+            else:
+                # Sequential: Remove layers 3, 4, 5... (standard bathtub assumption)
+                layers_to_remove = list(range(3, 3 + layer_idx))
+                
+            handler.remove_layers(component_name, layers_to_remove, inplace=True)
             print(f"  Removed layers: {layers_to_remove}")
-            print(f"  Model now has {len(handler.get_layers('main'))} layers")
+            print(f"  Model now has {len(handler.get_layers(component_name))} layers")
         
         # Evaluate
         score, details = benchmark.evaluate(
@@ -263,7 +437,9 @@ def save_results(results: List[Dict], model_id: str, benchmark_name: str, mode: 
     }
     
     safe_name = model_name.replace('-', '_').replace('.', '_').lower()
-    output_file = output_dir / f"{safe_name}_{benchmark_name}_benchmark.json"
+    # Include mode/strategy in filename to prevent overwriting
+    safe_mode = mode.replace(' ', '_').lower()
+    output_file = output_dir / f"{safe_name}_{benchmark_name}_{safe_mode}_benchmark.json"
     
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(output_data, f, indent=2, ensure_ascii=False, default=str)
@@ -305,6 +481,9 @@ Examples:
                         help='Specific layer counts to remove (e.g., 1 2 4 8)')
     parser.add_argument('--smart-prune', type=int, metavar='N',
                         help='Auto-prune until N consecutive degradations')
+    parser.add_argument('--prune-strategy', type=str, default='sequential',
+                        choices=['sequential', 'bi'],
+                        help='Pruning strategy: sequential (default) or bi (Block Influence)')
     parser.add_argument('--greedy', action='store_true', default=True,
                         help='Use greedy decoding (default: True)')
     parser.add_argument('--no-greedy', action='store_false', dest='greedy',
@@ -351,10 +530,11 @@ Examples:
     print(f"{'='*60}")
     
     if args.smart_prune:
-        mode = 'smart_prune'
+        mode = f'smart_prune_{args.prune_strategy}'
         results = smart_prune(
             args.model, benchmark, dataset, device,
-            args.greedy, threshold=args.smart_prune
+            args.greedy, threshold=args.smart_prune,
+            strategy=args.prune_strategy
         )
     else:
         mode = 'manual'

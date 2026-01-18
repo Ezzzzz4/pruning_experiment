@@ -129,8 +129,8 @@ class BlockInfluenceAnalyzer:
         Handles arbitrary tensor shapes by flattening.
         """
         # Flatten to 2D: (batch, features)
-        a_flat = tensor_a.view(tensor_a.size(0), -1)
-        b_flat = tensor_b.view(tensor_b.size(0), -1)
+        a_flat = tensor_a.reshape(tensor_a.size(0), -1)
+        b_flat = tensor_b.reshape(tensor_b.size(0), -1)
         
         # Compute cosine similarity per sample, then average
         cos_sim = F.cosine_similarity(a_flat, b_flat, dim=1)
@@ -181,7 +181,23 @@ class BlockInfluenceAnalyzer:
                 # Forward pass to capture activations
                 try:
                     if isinstance(inputs, dict):
-                        self.model(**inputs)
+                        # Check if this is a vision-only input for a multi-modal model (CLIP, SigLIP)
+                        has_pixel_values = 'pixel_values' in inputs
+                        has_input_ids = 'input_ids' in inputs
+                        
+                        if has_pixel_values and not has_input_ids:
+                            # Vision-only input - try sub-model methods
+                            if hasattr(self.model, 'get_image_features'):
+                                # CLIP/SigLIP style
+                                self.model.get_image_features(**inputs)
+                            elif hasattr(self.model, 'vision_model'):
+                                # Direct vision model access
+                                self.model.vision_model(**inputs)
+                            else:
+                                # Fallback
+                                self.model(**inputs)
+                        else:
+                            self.model(**inputs)
                     else:
                         self.model(inputs)
                 except Exception as e:

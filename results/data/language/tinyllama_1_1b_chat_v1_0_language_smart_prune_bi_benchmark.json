@@ -1,0 +1,159 @@
+{
+  "model_name": "TinyLlama-1.1B-Chat-v1.0",
+  "model_id": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+  "benchmark": "language",
+  "mode": "smart_prune_bi",
+  "generated_at": "2026-01-18T12:48:58.875741",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 50.914686817731926,
+      "details": {
+        "perplexity": 43.26902469268801,
+        "avg_loss": 3.76743701394782,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris.\n\n2. B. The capital of Germany is Berlin.\n\n3. C. The capital of the United States is Washington,"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The Apollo 11 mission was the first to do so, and it was a huge accomplishment for the United"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that involves the use of algorithms and statistical models to analyze large datasets and make predictions. It is a powerful tool for data analysis and has many"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 49.761854133183135,
+      "details": {
+        "perplexity": 47.27209635822696,
+        "avg_loss": 3.8559201924197644,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris.\n\n2. The capital of Germany is Berlin.\n\n3. The capital of the United Kingdom is London.\n\n4."
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The moon was a natural satellite of the Earth, and it was discovered by the Soviet Union in 1959"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that deals with the development of intelligent systems that learn from data and make decisions based on that data. Machine learning algorithms are used"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 48.301182732637656,
+      "details": {
+        "perplexity": 52.880299828597025,
+        "avg_loss": 3.9680308655083896,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. The capital of Spain is Madrid. The capital of the United States is Washington, D.C. The capital of the United Kingdom is London"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon.\nThe first humans to land on the moon were the astronauts of the Apollo 11 mission. The"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that is rapidly growing in the field of computer science. It is a branch of computer science that deals with the development of algorithms and models that"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 42.547610332398406,
+      "details": {
+        "perplexity": 82.23934743997374,
+        "avg_loss": 4.409633866850152,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris, and the capital of Spain is Madrid.\nThe capital of Spain is Madrid, and the capital of France is Paris.\nThe capital of"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon.\nThe first humans to land on the moon were the astronauts of the Apollo 11 mission. The"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that deals with the analysis of large amounts of data. It is a branch of artificial intelligence that deals with the analysis of large amounts of"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 38.828737905855405,
+      "details": {
+        "perplexity": 109.4062342198305,
+        "avg_loss": 4.695067873920303,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a city that has a rich history and culture. The city is known for its rich history and culture, and the city's rich history and culture"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered the concept of the universe. The universe was created in the year 1946, and the concept of the universe was first discovered in"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of study that is used to learn and practice a new language.\n\nThe term machine learning is a field of study that is used to learn and practice"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "5L_removed",
+      "layers_removed": 5,
+      "score": 35.41375605619302,
+      "details": {
+        "perplexity": 142.191880594808,
+        "avg_loss": 4.957177417249564,
+        "total_tokens": 830,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is a great example of how to make a French-style hat.\n\n2. The French-style hat: The French-style hat is a"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first began to use the word \"in the year 1969\" in the year 1969, and so on in the year"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of dreams.\n\n1. The user can set the default (as in Dream) mode.\n\n2. The user can set the default"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}

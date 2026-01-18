@@ -1,0 +1,134 @@
+{
+  "model_name": "Qwen2.5-0.5B",
+  "model_id": "Qwen/Qwen2.5-0.5B",
+  "benchmark": "language",
+  "mode": "smart_prune_sequential",
+  "generated_at": "2026-01-18T12:25:53.455359",
+  "results": [
+    {
+      "config": "baseline",
+      "layers_removed": 0,
+      "score": 67.12960622257708,
+      "details": {
+        "perplexity": 12.464641513197918,
+        "avg_loss": 2.5228959570912752,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris. It is the largest city in Europe and the second largest in the world. It is also the capital of France, the second largest country in"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first landed on the moon. The moon is approximately 384,400 kilometers away from Earth. If a spaceship travels at a speed of"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that uses statistical methods to develop computer programs that can learn from data and make predictions or decisions. It is a subset of artificial intelligence and is"
+          }
+        ]
+      },
+      "degradation": false
+    },
+    {
+      "config": "1L_removed",
+      "layers_removed": 1,
+      "score": 36.892017288348484,
+      "details": {
+        "perplexity": 126.94027175524123,
+        "avg_loss": 4.843716674692491,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is Paris, the capital of France. Paris is the capital of France. Paris is the capital of France. Paris is the capital of France. Paris is"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first used the term 'kilogram' to measure mass. The kilogram is a unit of mass in the SI system. The kilogram is defined by"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of computer science that uses algorithms and statistical learning techniques to help computers make decisions and choices on their own, based on how an input data is structured. The"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "2L_removed",
+      "layers_removed": 2,
+      "score": 31.825468036667502,
+      "details": {
+        "perplexity": 187.27698060338824,
+        "avg_loss": 5.232588700687184,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is located at the point where the river and the sea meet. The river is the Rhôneau River, and the sea is the Rhône"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered the concept of a number. The concept of a number was first introduced by the ancient Greeks. The Greeks were the first to use the concept of"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of research and development. It is a field of research because it is a field of study. It is a field of development because it is a field of"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "3L_removed",
+      "layers_removed": 3,
+      "score": 24.31174310379579,
+      "details": {
+        "perplexity": 333.3818072407129,
+        "avg_loss": 5.809288401463452,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is the capital of the French language. The capital of France is the capital of the French language. The French of the capital of France. The French of"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first discovered that the number of the number of the number of the number of the number of the number of the number of the number of the number of the"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of interest to you and me. I am not a mathematician, but I have been thinking about this question for a while. I am not a mathematic"
+          }
+        ]
+      },
+      "degradation": true
+    },
+    {
+      "config": "4L_removed",
+      "layers_removed": 4,
+      "score": 24.719493425519687,
+      "details": {
+        "perplexity": 323.10986597170177,
+        "avg_loss": 5.77799240771462,
+        "total_tokens": 680,
+        "examples": [
+          {
+            "prompt": "The capital of France is",
+            "completion": "The capital of France is worth $1,000,0 for a total of $1,000. The capital of France is worth $1,0"
+          },
+          {
+            "prompt": "In the year 1969, humans first",
+            "completion": "In the year 1969, humans first, humans, the 1960s, the 1960s, the 1960s, the 1"
+          },
+          {
+            "prompt": "Machine learning is a field of",
+            "completion": "Machine learning is a field of the future of what it is used to solve the problem of the last example of the problem. The problem is a problem. The problem is a problem"
+          }
+        ]
+      },
+      "degradation": true
+    }
+  ]
+}
