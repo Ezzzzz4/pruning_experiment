@@ -1,20 +1,11 @@
-# Core ML framework
-torch>=2.0.0
-transformers>=4.30.0
+--extra-index-url https://download.pytorch.org/whl/cu128
 
-# Vision models  
-torchvision>=0.15.0
-
-# Data handling
-datasets>=2.14.0
-numpy>=1.24.0
-
-# Visualization
-matplotlib>=3.7.0
-seaborn>=0.12.0
-
-# Utilities
-tqdm>=4.65.0
-
-# Additional dependencies for specific models
-einops>=0.7.0  # Required by Jina CLIP v2
+torch==2.11.0+cu128
+triton-windows==3.6.0.post25; platform_system == "Windows"
+transformers==5.15.0
+datasets==5.0.1
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.11.1
+pytest==9.1.1
+lm_eval[hf] @ git+https://github.com/EleutherAI/lm-evaluation-harness.git@8a07e1110d060de48cfc7a9a7987b7659060b60b

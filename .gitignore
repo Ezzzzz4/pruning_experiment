@@ -81,11 +81,13 @@ venv.bak/
 Thumbs.db
 
 # Project specific
+.omx/
 # results/data/*.json # Commented out to allow portfolio results
 # results/data/*.csv
 !results/data/language/*.json
 !results/figures/language/*.png
 results/checkpoints/
+results/lm_eval/
 *.pt
 *.pth
 *.ckpt

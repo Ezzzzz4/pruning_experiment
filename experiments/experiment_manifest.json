@@ -1,0 +1,409 @@
+{
+  "configs": [
+    {
+      "k": 0,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:baseline:k0:seednone",
+      "seed": null,
+      "strategy": "baseline"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:bi:k2:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k2:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k2:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k2:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:bi:k4:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k4:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k4:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k4:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:bi:k8:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k8:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k8:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B",
+      "model_key": "base",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796",
+      "run_key": "base:random:k8:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 0,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:baseline:k0:seednone",
+      "seed": null,
+      "strategy": "baseline"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:bi:k2:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k2:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k2:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k2:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:bi:k4:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k4:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k4:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k4:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:bi:k8:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k8:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k8:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_key": "instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "run_key": "instruct:random:k8:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 0,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:baseline:k0:seednone",
+      "seed": null,
+      "strategy": "baseline"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:bi:k2:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k2:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k2:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 2,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k2:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:bi:k4:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k4:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k4:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 4,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k4:seed2",
+      "seed": 2,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:bi:k8:seednone",
+      "seed": null,
+      "strategy": "bi"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k8:seed0",
+      "seed": 0,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k8:seed1",
+      "seed": 1,
+      "strategy": "random"
+    },
+    {
+      "k": 8,
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "model_key": "math",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d",
+      "run_key": "math:random:k8:seed2",
+      "seed": 2,
+      "strategy": "random"
+    }
+  ],
+  "created_for": "flat_lm_eval_pruning_experiment",
+  "evaluation": {
+    "batch_size": 4,
+    "dtype": "float16",
+    "full_task_sets": true,
+    "gpu_memory_fraction": 0.9,
+    "log_samples": true,
+    "max_length_tokens": 2048,
+    "num_fewshot": 0
+  },
+  "evaluation_seed": 1234,
+  "grid": {
+    "config_count": 39,
+    "k": [
+      2,
+      4,
+      8
+    ],
+    "notes": "Per model: baseline, deterministic BI at k=2/4/8, and random at k=2/4/8 for seeds 0/1/2.",
+    "random_seeds": [
+      0,
+      1,
+      2
+    ],
+    "strategies": [
+      "baseline",
+      "bi",
+      "random"
+    ]
+  },
+  "harness_revision": "8a07e1110d060de48cfc7a9a7987b7659060b60b",
+  "models": {
+    "base": {
+      "model_id": "Qwen/Qwen2.5-7B",
+      "revision": "d149729398750b98c0af14eb82c78cfe92750796"
+    },
+    "instruct": {
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+    },
+    "math": {
+      "model_id": "Qwen/Qwen2.5-Math-7B-Instruct",
+      "revision": "ef9926d75ab1d54532f6a30dd5e760355eb9aa4d"
+    }
+  },
+  "schema_version": 1,
+  "tasks": [
+    "arc_challenge",
+    "piqa",
+    "winogrande",
+    "hellaswag",
+    "lambada_openai",
+    "wikitext"
+  ]
+}
