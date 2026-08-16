@@ -38,3 +38,12 @@ def test_append_sample_jsonl_writes_one_record_per_sample(tmp_path):
 def test_jsonl_writer_fails_on_unserializable_values(tmp_path):
     with pytest.raises(TypeError):
         append_unique_jsonl(tmp_path / "runs.jsonl", {"run_id": "abc", "bad": object()})
+
+
+def test_jsonl_writer_serializes_explicit_technical_types(tmp_path):
+    torch = pytest.importorskip("torch")
+    path = tmp_path / "runs.jsonl"
+
+    append_unique_jsonl(path, {"run_id": "abc", "dtype": torch.float16})
+
+    assert json.loads(path.read_text(encoding="utf-8"))["dtype"] == "torch.float16"

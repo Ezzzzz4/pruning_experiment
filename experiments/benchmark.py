@@ -500,6 +500,18 @@ def merge_task_results(task_results: list[tuple[str, dict[str, Any], float]]) ->
     return merged, samples
 
 
+def json_default(value: Any) -> Any:
+    torch = import_module("torch")
+    numpy = import_module("numpy")
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, (torch.dtype, torch.device)):
+        return str(value)
+    if isinstance(value, numpy.generic):
+        return value.item()
+    raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
+
+
 def append_unique_jsonl(path: Path, record: dict[str, Any], unique_key: str = "run_id") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -510,7 +522,9 @@ def append_unique_jsonl(path: Path, record: dict[str, Any], unique_key: str = "r
             if existing.get(unique_key) == record.get(unique_key):
                 raise RuntimeError(f"Duplicate {unique_key} {record.get(unique_key)!r} in {path}.")
     with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
+        handle.write(
+            json.dumps(record, sort_keys=True, default=json_default, allow_nan=False) + "\n"
+        )
 
 
 def append_sample_jsonl(path: Path, run_id: str, samples: list[dict[str, Any]]) -> None:
@@ -520,7 +534,9 @@ def append_sample_jsonl(path: Path, run_id: str, samples: list[dict[str, Any]]) 
     with path.open("a", encoding="utf-8") as handle:
         for sample in samples:
             record = {"run_id": run_id, **sample}
-            handle.write(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
+            handle.write(
+                json.dumps(record, sort_keys=True, default=json_default, allow_nan=False) + "\n"
+            )
 
 
 def start_gpu_monitor(path: Path) -> tuple[subprocess.Popen[str], Any, Any]:
