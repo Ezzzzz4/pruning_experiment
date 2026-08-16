@@ -1,4 +1,5 @@
 import math
+from collections import UserDict
 
 import pytest
 import torch
@@ -77,6 +78,20 @@ def test_canonical_uses_hand_computed_masked_token_mean():
 
     expected = (1.0 - (1.0 / math.sqrt(2.0))) / 2.0
     assert scores == pytest.approx({0: expected})
+
+
+def test_accepts_mapping_batches_like_transformers_batch_encoding():
+    model = TinyDecoder([AddFirstHidden()])
+    batch = UserDict(
+        {
+            "input_ids": torch.tensor([[0, 1]], dtype=torch.long),
+            "attention_mask": torch.tensor([[1, 1]], dtype=torch.long),
+        }
+    )
+
+    scores = compute_block_influence(model, model.layers, [batch])
+
+    assert set(scores) == {0}
 
 
 def test_canonical_padding_invariance():

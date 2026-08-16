@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 
 import torch
 import torch.nn as nn
@@ -12,7 +12,7 @@ import torch.nn.functional as F
 def compute_block_influence(
     model: nn.Module,
     layers: Iterable[nn.Module],
-    dataloader: Iterable[dict[str, torch.Tensor]],
+    dataloader: Iterable[Mapping[str, torch.Tensor]],
     *,
     mode: str = "canonical",
 ) -> dict[int, float]:
@@ -104,11 +104,11 @@ def _model_device(model: nn.Module) -> torch.device:
 
 
 def _batch_tensors(
-    batch: dict[str, torch.Tensor],
+    batch: Mapping[str, torch.Tensor],
     device: torch.device,
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    if not isinstance(batch, dict):
-        raise TypeError("dataloader batches must be dictionaries")
+    if not isinstance(batch, Mapping):
+        raise TypeError("dataloader batches must be mappings")
     if "input_ids" not in batch or "attention_mask" not in batch:
         raise KeyError("batch must contain input_ids and attention_mask")
 
