@@ -47,3 +47,37 @@ def test_jsonl_writer_serializes_explicit_technical_types(tmp_path):
     append_unique_jsonl(path, {"run_id": "abc", "dtype": torch.float16})
 
     assert json.loads(path.read_text(encoding="utf-8"))["dtype"] == "torch.float16"
+
+
+def test_jsonl_writer_serializes_callable_by_stable_qualified_name(tmp_path):
+    path = tmp_path / "runs.jsonl"
+
+    append_unique_jsonl(path, {"run_id": "abc", "callable": test_jsonl_writer_fails_on_unserializable_values})
+
+    callable_record = json.loads(path.read_text(encoding="utf-8"))["callable"]
+    assert callable_record == {
+        "python_callable": (
+            "test_results_io.test_jsonl_writer_fails_on_unserializable_values"
+        )
+    }
+
+
+def test_jsonl_writer_removes_machine_cache_path_from_harness_callable(tmp_path):
+    path = tmp_path / "runs.jsonl"
+
+    def harness_callable():
+        return None
+
+    harness_callable.__module__ = (
+        r"C:\cache\lm-evaluation-harness\revision\lm_eval\tasks\example\utils"
+    )
+    append_unique_jsonl(path, {"run_id": "abc", "callable": harness_callable})
+
+    callable_record = json.loads(path.read_text(encoding="utf-8"))["callable"]
+    assert callable_record == {
+        "python_callable": (
+            "lm_eval.tasks.example.utils."
+            "test_jsonl_writer_removes_machine_cache_path_from_harness_callable."
+            "<locals>.harness_callable"
+        )
+    }

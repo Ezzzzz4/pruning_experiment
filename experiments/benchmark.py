@@ -17,6 +17,7 @@ import random
 import subprocess
 import sys
 import time
+import types
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -509,6 +510,14 @@ def json_default(value: Any) -> Any:
         return str(value)
     if isinstance(value, numpy.generic):
         return value.item()
+    if isinstance(
+        value,
+        (types.FunctionType, types.BuiltinFunctionType, types.MethodType),
+    ):
+        module_name = value.__module__.replace("\\", "/")
+        if "/lm_eval/" in module_name:
+            module_name = "lm_eval." + module_name.split("/lm_eval/", 1)[1].replace("/", ".")
+        return {"python_callable": f"{module_name}.{value.__qualname__}"}
     raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
