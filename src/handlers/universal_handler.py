@@ -9,17 +9,17 @@ For unusual architectures (YOLO, etc.), use specialized handlers.
 
 import torch
 import torch.nn as nn
-from typing import Dict, List, Tuple, Optional, Set
+from typing import Dict, List
 from dataclasses import dataclass
+from numbers import Integral
 import numpy as np
-from tqdm import tqdm
 
 
 @dataclass
 class ComponentInfo:
     """Information about a discovered model component."""
     path: str
-    layers: nn.ModuleList
+    layers: nn.Module
     count: int
     layer_type: str
     component_type: str  # 'encoder', 'decoder', 'vision', 'text', 'audio', 'main'
@@ -244,7 +244,7 @@ class UniversalHandler:
         if self.is_multimodal:
             print("  ⭐ Multi-modal model detected!")
     
-    def get_layers(self, component: str = 'main') -> nn.ModuleList:
+    def get_layers(self, component: str = 'main') -> nn.Module:
         """Get layers for a specific component."""
         if component not in self.components:
             available = list(self.components.keys())
@@ -270,7 +270,7 @@ class UniversalHandler:
         self,
         dataloader: torch.utils.data.DataLoader,
         component: str = 'main',
-        num_samples: Optional[int] = 100
+        mode: str = 'canonical',
     ) -> Dict[int, float]:
         """
         Compute Block Influence scores for a component.
@@ -278,23 +278,24 @@ class UniversalHandler:
         Args:
             dataloader: DataLoader for samples
             component: Component to analyze ('main', 'encoder', 'vision', etc.)
-            num_samples: Number of samples to use
+            mode: Block Influence definition ('canonical' or 'legacy')
             
         Returns:
             Dict mapping layer_idx -> BI score
         """
-        from src.core.block_influence import BlockInfluenceAnalyzer
-        
-        analyzer = BlockInfluenceAnalyzer(self.model, verbose=False)
-        layers = self.get_layers(component)
-        path = self.get_layer_path(component)
-        
-        return analyzer.compute_bi_scores(dataloader, layers, path, num_samples)
+        from src.core.block_influence import compute_block_influence
+
+        return compute_block_influence(
+            self.model,
+            self.get_layers(component),
+            dataloader,
+            mode=mode,
+        )
     
     def analyze_all(
         self,
         dataloader: torch.utils.data.DataLoader,
-        num_samples: Optional[int] = 100
+        mode: str = 'canonical',
     ) -> Dict[str, Dict]:
         """
         Analyze all discovered components.
@@ -305,7 +306,7 @@ class UniversalHandler:
         results = {}
         
         for comp_name in self.components:
-            bi_scores = self.compute_bi_scores(dataloader, comp_name, num_samples)
+            bi_scores = self.compute_bi_scores(dataloader, comp_name, mode)
             
             # Compute summary stats
             scores = list(bi_scores.values())
@@ -350,6 +351,33 @@ class UniversalHandler:
             }
         
         return analysis
+
+    def _validate_layer_indices(self, component: str, layer_indices: List[int]) -> None:
+        """Validate layer indices before copying or mutating model structure."""
+        if component not in self.components:
+            available = list(self.components.keys())
+            raise ValueError(f"Component '{component}' not found. Available: {available}")
+
+        count = self.components[component].count
+        seen = set()
+        for idx in layer_indices:
+            if isinstance(idx, bool) or not isinstance(idx, Integral):
+                raise ValueError(f"Layer index must be an integer, got {idx!r}")
+            if idx < 0:
+                raise ValueError(f"Layer index must be non-negative, got {idx}")
+            if idx >= count:
+                raise ValueError(f"Layer index {idx} out of range for {count} layers")
+            if idx in seen:
+                raise ValueError(f"Duplicate layer index: {idx}")
+            seen.add(idx)
+
+    def _make_layer_container(self, current_layers: nn.Module, kept_layers: List[nn.Module]) -> nn.Module:
+        """Rebuild a layer container while preserving the discovered container type."""
+        if isinstance(current_layers, nn.Sequential):
+            return nn.Sequential(*kept_layers)
+        if isinstance(current_layers, nn.ModuleList):
+            return nn.ModuleList(kept_layers)
+        return nn.ModuleList(kept_layers)
     
     def remove_layer(
         self,
@@ -369,6 +397,8 @@ class UniversalHandler:
             Model with layer removed
         """
         import copy
+
+        self._validate_layer_indices(component, [layer_idx])
         
         if inplace:
             model = self.model
@@ -385,12 +415,16 @@ class UniversalHandler:
             parent = getattr(parent, part)
         
         current_layers = getattr(parent, parts[-1])
-        new_layers = nn.ModuleList([
+        new_layers = self._make_layer_container(current_layers, [
             layer for i, layer in enumerate(current_layers)
             if i != layer_idx
         ])
         
         setattr(parent, parts[-1], new_layers)
+
+        if inplace:
+            self.components[component].layers = new_layers
+            self.components[component].count = len(new_layers)
         
         if self.verbose:
             print(f"✓ Removed layer {layer_idx} from {component}")
@@ -406,6 +440,8 @@ class UniversalHandler:
     ) -> nn.Module:
         """Remove multiple layers from a component."""
         import copy
+
+        self._validate_layer_indices(component, layer_indices)
         
         if inplace:
             model = self.model
@@ -422,17 +458,17 @@ class UniversalHandler:
             parent = getattr(parent, part)
         
         current_layers = getattr(parent, parts[-1])
-        new_layers = nn.ModuleList([
+        indices_to_remove = set(layer_indices)
+        new_layers = self._make_layer_container(current_layers, [
             layer for i, layer in enumerate(current_layers)
-            if i not in layer_indices
+            if i not in indices_to_remove
         ])
         
         setattr(parent, parts[-1], new_layers)
         
-        # CRITICAL: Update the component info to point to the NEW layer list
-        # Otherwise get_layers() will return the old, detached list
-        self.components[component].layers = new_layers
-        self.components[component].count = len(new_layers)
+        if inplace:
+            self.components[component].layers = new_layers
+            self.components[component].count = len(new_layers)
         
         if self.verbose:
             print(f"✓ Removed {len(layer_indices)} layers from {component}: {sorted(layer_indices)}")
