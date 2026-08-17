@@ -23,6 +23,22 @@ def load_manifest(path: Path) -> list[dict[str, Any]]:
         raise ValueError(f"Manifest {path} contains a config without a string run_key.")
     if len(set(run_keys)) != len(run_keys):
         raise ValueError(f"Manifest {path} contains duplicate run_key values.")
+    expected_count = manifest.get("grid", {}).get("config_count")
+    if expected_count != len(configs):
+        raise ValueError(
+            f"Manifest {path} declares {expected_count} configs but contains {len(configs)}."
+        )
+    for config in configs:
+        tasks = config.get("tasks")
+        if not isinstance(tasks, list) or not tasks:
+            raise ValueError(f"Manifest config {config['run_key']} has no task list.")
+        removed = config.get("removed_indices")
+        if removed is not None:
+            k = config.get("k")
+            if len(removed) != k or len(set(removed)) != k:
+                raise ValueError(
+                    f"Manifest config {config['run_key']} does not contain {k} distinct indices."
+                )
     return configs
 
 
@@ -47,6 +63,7 @@ def successful_run_keys(run_files: Iterable[Path]) -> set[str]:
 
 def benchmark_command(
     config: dict[str, Any],
+    manifest_path: Path,
     output_dir: Path,
     calibration_path: Path,
     bi_dir: Path,
@@ -79,20 +96,29 @@ def benchmark_command(
         str(bi_dir / f"{model_key}.json"),
         "--output-dir",
         str(output_dir),
+        "--protocol-manifest",
+        str(manifest_path),
     ]
     seed = config.get("seed")
     if seed is not None:
         command.extend(["--seed", str(seed)])
+    tasks = config.get("tasks")
+    if tasks:
+        command.extend(["--tasks", *(str(task) for task in tasks)])
+    removed_indices = config.get("removed_indices")
+    if removed_indices is not None:
+        command.extend(["--removed-indices", *(str(idx) for idx in removed_indices)])
+        command.extend(["--selection-source", str(config["selection_source"])])
     return command
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run or resume the official 39-config grid.")
+    parser = argparse.ArgumentParser(description="Run or resume the frozen official experiment manifest.")
     parser.add_argument("--official-run", action="store_true")
     parser.add_argument("--manifest", type=Path, default=Path("experiments/experiment_manifest.json"))
     parser.add_argument("--results-root", type=Path, default=Path("results/lm_eval"))
     parser.add_argument("--output-dir", type=Path, default=Path("results/lm_eval/grid"))
-    parser.add_argument("--bi-dir", type=Path, default=Path("results/lm_eval/bi"))
+    parser.add_argument("--bi-dir", type=Path, default=Path("experiments/bi"))
     parser.add_argument(
         "--calibration-jsonl",
         type=Path,
@@ -119,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
         run_key = config["run_key"]
         command = benchmark_command(
             config,
+            args.manifest,
             args.output_dir,
             args.calibration_jsonl,
             args.bi_dir,

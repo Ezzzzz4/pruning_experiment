@@ -37,10 +37,19 @@ def test_successful_run_keys_only_accepts_official_successes(tmp_path):
 
 def test_benchmark_command_records_random_seed_and_model_bi_path(tmp_path, monkeypatch):
     monkeypatch.setattr(run_grid.sys, "executable", "python")
-    config = {"model_key": "math", "strategy": "random", "k": 4, "seed": 2}
+    config = {
+        "model_key": "math",
+        "strategy": "random",
+        "k": 4,
+        "seed": 2,
+        "tasks": ["wikitext"],
+        "removed_indices": [1, 4, 8, 12],
+        "selection_source": "conditional_bi_label_permutation",
+    }
 
     command = run_grid.benchmark_command(
         config,
+        tmp_path / "manifest.json",
         tmp_path / "runs",
         tmp_path / "calibration.jsonl",
         tmp_path / "bi",
@@ -53,12 +62,25 @@ def test_benchmark_command_records_random_seed_and_model_bi_path(tmp_path, monke
     assert command[command.index("--seed") + 1] == "2"
     assert command[command.index("--bi-scores") + 1] == str(tmp_path / "bi" / "math.json")
     assert "--official-run" in command
+    assert command[command.index("--protocol-manifest") + 1] == str(tmp_path / "manifest.json")
+    assert command[command.index("--tasks") + 1] == "wikitext"
+    removed_position = command.index("--removed-indices")
+    assert command[removed_position + 1 : removed_position + 5] == ["1", "4", "8", "12"]
+    assert command[command.index("--selection-source") + 1] == "conditional_bi_label_permutation"
 
 
 def test_load_manifest_rejects_duplicate_run_keys(tmp_path):
     manifest = tmp_path / "manifest.json"
     manifest.write_text(
-        json.dumps({"configs": [{"run_key": "duplicate"}, {"run_key": "duplicate"}]}),
+        json.dumps(
+            {
+                "grid": {"config_count": 2},
+                "configs": [
+                    {"run_key": "duplicate", "tasks": ["wikitext"]},
+                    {"run_key": "duplicate", "tasks": ["wikitext"]},
+                ],
+            }
+        ),
         encoding="utf-8",
     )
 

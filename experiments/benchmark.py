@@ -58,8 +58,6 @@ TASKS = [
     "wikitext",
 ]
 
-PRUNE_K = [2, 4, 8]
-RANDOM_SEEDS = [0, 1, 2]
 STRATEGIES = ["baseline", "bi", "random"]
 
 
@@ -77,6 +75,10 @@ class RunConfig:
     limit: int | float | None = None
     calibration_path: Path | None = None
     bi_scores_path: Path | None = None
+    tasks: tuple[str, ...] = tuple(TASKS)
+    removed_indices: tuple[int, ...] | None = None
+    selection_source: str | None = None
+    protocol_manifest_path: Path | None = None
 
     @property
     def run_key(self) -> str:
@@ -437,6 +439,32 @@ def removed_indices_for_config(
     raise ValueError(f"Unsupported strategy {strategy!r}.")
 
 
+def preselected_random_indices(
+    strategy: str,
+    k: int,
+    seed: int | None,
+    all_layers: list[int],
+    indices: tuple[int, ...],
+    selection_source: str,
+) -> tuple[list[int], dict[str, Any]]:
+    if strategy != "random":
+        raise ValueError("Preselected layer indices are only valid for random controls.")
+    if seed is None:
+        raise ValueError("Preselected random controls still require their protocol seed.")
+    removed = sorted(indices)
+    if len(removed) != k or len(set(removed)) != k:
+        raise ValueError(f"Expected {k} distinct preselected indices, received {removed}.")
+    invalid = [idx for idx in removed if idx not in all_layers]
+    if invalid:
+        raise ValueError(f"Preselected indices are outside the discovered layer pool: {invalid}.")
+    return removed, {
+        "all_layer_pool": all_layers,
+        "permutation": [],
+        "bi_scores": None,
+        "selection_source": selection_source,
+    }
+
+
 def make_hflm(model: Any, tokenizer: Any, batch_size: str) -> Any:
     from lm_eval.models.huggingface import HFLM
 
@@ -622,6 +650,12 @@ def base_provenance(config: RunConfig, device: str) -> dict[str, Any]:
             "device_index": idx,
             "capability": torch.cuda.get_device_capability(idx),
         }
+    protocol_manifest = None
+    if config.protocol_manifest_path is not None:
+        protocol_manifest = {
+            "path": str(config.protocol_manifest_path),
+            "sha256": file_sha256(config.protocol_manifest_path),
+        }
     return {
         "created_at": utc_now(),
         "run_key": config.run_key,
@@ -646,11 +680,12 @@ def base_provenance(config: RunConfig, device: str) -> dict[str, Any]:
         "device": device,
         "gpu": gpu,
         "seeds": {"evaluation": EVALUATION_SEED, "strategy": config.seed},
-        "tasks": TASKS,
+        "tasks": list(config.tasks),
         "limit": config.limit,
         "batch_size": config.batch_size,
         "max_length_tokens": EVALUATION_MAX_LENGTH,
         "gpu_memory_fraction": GPU_MEMORY_FRACTION if device == "cuda" else None,
+        "protocol_manifest": protocol_manifest,
     }
 
 
@@ -663,6 +698,13 @@ def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str,
         raise ValueError(f"Strategy must be one of {STRATEGIES}.")
     if config.model_key not in MODEL_REVISIONS:
         raise ValueError(f"Model key must be one of {sorted(MODEL_REVISIONS)}.")
+    if not config.tasks:
+        raise ValueError("At least one evaluation task is required.")
+    if len(set(config.tasks)) != len(config.tasks):
+        raise ValueError(f"Evaluation tasks must be unique: {config.tasks}.")
+    unsupported_tasks = [task for task in config.tasks if task not in TASKS]
+    if unsupported_tasks:
+        raise ValueError(f"Unsupported evaluation tasks: {unsupported_tasks}.")
 
     set_global_seeds(EVALUATION_SEED)
 
@@ -681,6 +723,7 @@ def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str,
             "k": config.k,
             "seed": config.seed,
             "official_run": config.official_run,
+            "tasks": list(config.tasks),
         },
         "provenance": base_provenance(config, device),
     }
@@ -720,15 +763,25 @@ def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str,
         if bi_bundle is not None:
             bi_scores = {int(idx): float(score) for idx, score in bi_bundle["canonical"].items()}
 
-        removed, selection = removed_indices_for_config(
-            config.strategy, config.k, config.seed, all_layers, bi_scores
-        )
+        if config.removed_indices is None:
+            removed, selection = removed_indices_for_config(
+                config.strategy, config.k, config.seed, all_layers, bi_scores
+            )
+        else:
+            removed, selection = preselected_random_indices(
+                config.strategy,
+                config.k,
+                config.seed,
+                all_layers,
+                config.removed_indices,
+                config.selection_source or "protocol_manifest",
+            )
         if removed:
             handler.remove_layers(component, removed, inplace=True)
 
         hflm = make_hflm(model, tokenizer, config.batch_size)
         task_results = []
-        for task in TASKS:
+        for task in config.tasks:
             result, elapsed = simple_evaluate_one_task(hflm, task, config.limit)
             task_results.append((task, result, elapsed))
         merged, samples = merge_task_results(task_results)
@@ -792,68 +845,9 @@ def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str,
 
 
 def build_manifest() -> dict[str, Any]:
-    configs = []
-    for model_key, model in MODEL_REVISIONS.items():
-        configs.append(
-            {
-                "run_key": f"{model_key}:baseline:k0:seednone",
-                "model_key": model_key,
-                "model_id": model["model_id"],
-                "revision": model["revision"],
-                "strategy": "baseline",
-                "k": 0,
-                "seed": None,
-            }
-        )
-        for k in PRUNE_K:
-            configs.append(
-                {
-                    "run_key": f"{model_key}:bi:k{k}:seednone",
-                    "model_key": model_key,
-                    "model_id": model["model_id"],
-                    "revision": model["revision"],
-                    "strategy": "bi",
-                    "k": k,
-                    "seed": None,
-                }
-            )
-            for seed in RANDOM_SEEDS:
-                configs.append(
-                    {
-                        "run_key": f"{model_key}:random:k{k}:seed{seed}",
-                        "model_key": model_key,
-                        "model_id": model["model_id"],
-                        "revision": model["revision"],
-                        "strategy": "random",
-                        "k": k,
-                        "seed": seed,
-                    }
-                )
-    return {
-        "schema_version": 1,
-        "created_for": "flat_lm_eval_pruning_experiment",
-        "harness_revision": HARNESS_REVISION,
-        "evaluation_seed": EVALUATION_SEED,
-        "models": MODEL_REVISIONS,
-        "tasks": TASKS,
-        "evaluation": {
-            "dtype": "float16",
-            "batch_size": 4,
-            "max_length_tokens": EVALUATION_MAX_LENGTH,
-            "gpu_memory_fraction": GPU_MEMORY_FRACTION,
-            "num_fewshot": 0,
-            "log_samples": True,
-            "full_task_sets": True,
-        },
-        "grid": {
-            "k": PRUNE_K,
-            "random_seeds": RANDOM_SEEDS,
-            "strategies": ["baseline", "bi", "random"],
-            "config_count": len(configs),
-            "notes": "Per model: baseline, deterministic BI at k=2/4/8, and random at k=2/4/8 for seeds 0/1/2.",
-        },
-        "configs": configs,
-    }
+    from experiments.prepare_protocol import build_manifest as build_protocol_manifest
+
+    return build_protocol_manifest()
 
 
 def write_manifest(path: Path) -> None:
@@ -881,6 +875,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--official-run", action="store_true")
     parser.add_argument("--calibration-jsonl", type=Path)
     parser.add_argument("--bi-scores", type=Path)
+    parser.add_argument("--tasks", nargs="+", choices=TASKS, default=TASKS)
+    parser.add_argument("--removed-indices", nargs="+", type=int)
+    parser.add_argument("--selection-source")
+    parser.add_argument("--protocol-manifest", type=Path)
+    parser.add_argument("--prepare-bi", action="store_true")
     parser.add_argument("--write-manifest", type=Path)
     return parser.parse_args(argv)
 
@@ -892,6 +891,37 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.model_key is None:
         raise SystemExit("--model-key is required unless --write-manifest is used.")
+
+    if args.prepare_bi:
+        if args.calibration_jsonl is None or args.bi_scores is None:
+            raise SystemExit("--prepare-bi requires --calibration-jsonl and --bi-scores.")
+        set_global_seeds(EVALUATION_SEED)
+        torch = import_module("torch")
+        device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
+        if device == "cuda":
+            torch.cuda.set_per_process_memory_fraction(GPU_MEMORY_FRACTION)
+        model, tokenizer, _ = load_model_and_tokenizer(args.model_key, device, args.dtype)
+        handler, component, _ = discover_layer_pool(model)
+        bundle = load_or_compute_bi_bundle(
+            args.bi_scores,
+            model,
+            handler.get_layers(component),
+            tokenizer,
+            args.calibration_jsonl,
+        )
+        if bundle is None:
+            raise RuntimeError("BI preparation did not produce a bundle.")
+        print(
+            json.dumps(
+                {
+                    "model_key": args.model_key,
+                    "output": str(args.bi_scores),
+                    "rank_correlation_spearman": bundle["rank_correlation_spearman"],
+                },
+                sort_keys=True,
+            )
+        )
+        return 0
 
     limit: int | float | None = None
     if args.limit is not None:
@@ -910,6 +940,10 @@ def main(argv: list[str] | None = None) -> int:
         limit=limit,
         calibration_path=args.calibration_jsonl,
         bi_scores_path=args.bi_scores,
+        tasks=tuple(args.tasks),
+        removed_indices=None if args.removed_indices is None else tuple(args.removed_indices),
+        selection_source=args.selection_source,
+        protocol_manifest_path=args.protocol_manifest,
     )
     record = run_configuration(config)
     print(json.dumps({"run_id": record["run_id"], "status": record["status"]}, sort_keys=True))

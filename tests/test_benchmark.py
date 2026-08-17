@@ -29,11 +29,13 @@ def tiny_model_classes():
     return TinyModel
 
 
-def test_build_manifest_has_expected_39_config_grid():
+def test_build_manifest_has_expected_frozen_permutation_grid():
     manifest = benchmark.build_manifest()
 
-    assert manifest["grid"]["config_count"] == 39
-    assert len(manifest["configs"]) == 39
+    assert manifest["grid"]["config_count"] == 133
+    assert manifest["grid"]["full_task_config_count"] == 25
+    assert manifest["grid"]["wikitext_only_config_count"] == 108
+    assert len(manifest["configs"]) == 133
     assert {model["revision"] for model in manifest["models"].values()} == {
         "d149729398750b98c0af14eb82c78cfe92750796",
         "a09a35458c702b33eeacc393d103063234e8bc28",
@@ -44,6 +46,14 @@ def test_build_manifest_has_expected_39_config_grid():
         "Qwen/Qwen2.5-7B-Instruct",
         "Qwen/Qwen2.5-Math-7B-Instruct",
     }
+    primary_random = [
+        config
+        for config in manifest["configs"]
+        if config["protocol_role"].startswith("primary_random")
+    ]
+    assert len(primary_random) == 60
+    assert {config["seed"] for config in primary_random} == set(range(3, 23))
+    assert all(len(config["removed_indices"]) == 4 for config in primary_random)
 
 
 def test_random_layer_selection_is_nested_for_same_seed():
@@ -67,9 +77,60 @@ def test_bi_layer_selection_records_full_vector_and_lowest_scores():
     assert meta["bi_scores"] == {"0": 0.4, "1": 0.1, "2": 0.3, "3": 0.2}
 
 
+def test_preselected_random_indices_are_validated_and_recorded():
+    removed, meta = benchmark.preselected_random_indices(
+        "random", 2, 7, list(range(6)), (4, 1), "conditional_bi_label_permutation"
+    )
+
+    assert removed == [1, 4]
+    assert meta["selection_source"] == "conditional_bi_label_permutation"
+    assert meta["permutation"] == []
+
+
+def test_preselected_random_indices_reject_wrong_size_and_strategy():
+    with pytest.raises(ValueError, match="Expected 2 distinct"):
+        benchmark.preselected_random_indices(
+            "random", 2, 7, list(range(6)), (1, 1), "conditional_bi_label_permutation"
+        )
+    with pytest.raises(ValueError, match="only valid for random"):
+        benchmark.preselected_random_indices(
+            "bi", 2, None, list(range(6)), (1, 2), "conditional_bi_label_permutation"
+        )
+
+
 def test_hflm_rejects_automatic_batch_probing():
     with pytest.raises(ValueError, match="disabled"):
         benchmark.make_hflm(object(), object(), "auto")
+
+
+def test_parse_args_accepts_frozen_protocol_selection():
+    args = benchmark.parse_args(
+        [
+            "--model-key",
+            "base",
+            "--strategy",
+            "random",
+            "--k",
+            "4",
+            "--seed",
+            "3",
+            "--tasks",
+            "wikitext",
+            "--removed-indices",
+            "2",
+            "5",
+            "9",
+            "12",
+            "--selection-source",
+            "conditional_bi_label_permutation",
+            "--protocol-manifest",
+            "experiments/experiment_manifest.json",
+        ]
+    )
+
+    assert args.tasks == ["wikitext"]
+    assert args.removed_indices == [2, 5, 9, 12]
+    assert args.protocol_manifest.name == "experiment_manifest.json"
 
 
 def test_evaluation_context_is_bounded_for_laptop_memory(monkeypatch):
