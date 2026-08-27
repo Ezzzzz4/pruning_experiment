@@ -1,13 +1,17 @@
 # Understanding Layer Redundancy in Neural Networks: A Cross-Architecture Study
 
-> **Current status: rebuild in progress.** This project is being rebuilt after audit. Previous conclusions are withdrawn. The historical benchmark outputs, figures, and narrative below are retained only as an archive of prior work and should not be treated as evidentiary support for Block Influence (BI), pruning safety, or deployment guidance until the rebuilt implementation and experiments are independently verified.
+> **Current status: exploratory pilot complete; confirmatory study incomplete.** Previous conclusions are withdrawn. The historical benchmark outputs, figures, and narrative below are retained only as an archive and are not evidence for Block Influence (BI), pruning safety, or deployment guidance.
 
-## Current experiment (2026-08-18)
+## Current experiment (updated 2026-08-27)
 
 The rebuilt study asks whether Block Influence selects transformer blocks for removal better than random selection, and whether the observed advantage differs across Qwen2.5-7B base, instruction-tuned, and math-instruction-tuned checkpoints.
 
 The confirmatory endpoint is WikiText word perplexity after removing four blocks. BI is compared with 20 frozen conditional random permutations. Five random controls also run the complete six-task harness; `k=8` is a WikiText dose-response analysis, and the already observed base-model `k=2` runs are exploratory.
 
+The completed exploratory `k=2` pilot covers one Qwen2.5-7B baseline, one BI selection, and three seeded random selections across all six tasks. It revealed large variation between random layer choices and motivated the stronger frozen protocol. It does not establish that BI outperforms random selection.
+
+- Exploratory results and limitations: [`results/preliminary/PILOT_RESULTS_2026-08-27.md`](results/preliminary/PILOT_RESULTS_2026-08-27.md)
+- Short project/activity brief: [`results/preliminary/STEM_ACTIVITY_BRIEF.md`](results/preliminary/STEM_ACTIVITY_BRIEF.md)
 - Frozen rationale and statistical commitments: [`experiments/PROTOCOL_AMENDMENT_2026-08-18.md`](experiments/PROTOCOL_AMENDMENT_2026-08-18.md)
 - Exact BI vectors, layer permutations, and removed indices: [`experiments/permutation_protocol.json`](experiments/permutation_protocol.json)
 - Complete resumable execution manifest: [`experiments/experiment_manifest.json`](experiments/experiment_manifest.json)

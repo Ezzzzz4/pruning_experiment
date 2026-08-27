@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "exploratory_pilot",
+  "created_at": "2026-08-27",
+  "scope": {
+    "model": "Qwen/Qwen2.5-7B",
+    "model_revision": "d149729398750b98c0af14eb82c78cfe92750796",
+    "pruning_level": 2,
+    "tasks": [
+      "arc_challenge",
+      "piqa",
+      "winogrande",
+      "hellaswag",
+      "lambada_openai",
+      "wikitext"
+    ],
+    "samples_per_run": 19534,
+    "harness_revision": "8a07e1110d060de48cfc7a9a7987b7659060b60b"
+  },
+  "metric_directions": {
+    "arc_challenge_acc_norm": "higher_is_better",
+    "piqa_acc_norm": "higher_is_better",
+    "winogrande_acc": "higher_is_better",
+    "hellaswag_acc_norm": "higher_is_better",
+    "lambada_openai_acc": "higher_is_better",
+    "wikitext_word_perplexity": "lower_is_better"
+  },
+  "runs": [
+    {
+      "run_key": "base:baseline:k0:seednone",
+      "run_id": "71031af10b52430586119a4f13c31ae9",
+      "code_revision": "04b1ffc9be4f68f599b1038c6a0955752e4f26d7",
+      "removed_indices": [],
+      "metrics": {
+        "arc_challenge_acc_norm": 0.5102389078498294,
+        "piqa_acc_norm": 0.7970620239390642,
+        "winogrande_acc": 0.728492501973165,
+        "hellaswag_acc_norm": 0.7891854212308305,
+        "lambada_openai_acc": 0.7199689501261402,
+        "wikitext_word_perplexity": 9.496716473391489
+      },
+      "total_seconds": 3554.6588814999996
+    },
+    {
+      "run_key": "base:bi:k2:seednone",
+      "run_id": "f905bfcfeaf04a2e97abe03bfb115c14",
+      "code_revision": "50ae203dcd07fb729bc2aad5372b385671801996",
+      "removed_indices": [16, 17],
+      "metrics": {
+        "arc_challenge_acc_norm": 0.46501706484641636,
+        "piqa_acc_norm": 0.7921653971708379,
+        "winogrande_acc": 0.6566692975532754,
+        "hellaswag_acc_norm": 0.7452698665604461,
+        "lambada_openai_acc": 0.6411798952066757,
+        "wikitext_word_perplexity": 10.833895348299686
+      },
+      "total_seconds": 3592.1310546000004
+    },
+    {
+      "run_key": "base:random:k2:seed0",
+      "run_id": "7b42f3636e254ae2af56b22f321cccd7",
+      "code_revision": "50ae203dcd07fb729bc2aad5372b385671801996",
+      "removed_indices": [3, 14],
+      "metrics": {
+        "arc_challenge_acc_norm": 0.43430034129692835,
+        "piqa_acc_norm": 0.7622415669205659,
+        "winogrande_acc": 0.580110497237569,
+        "hellaswag_acc_norm": 0.6679944234216292,
+        "lambada_openai_acc": 0.5835435668542597,
+        "wikitext_word_perplexity": 13.358149833281674
+      },
+      "total_seconds": 5721.719560700003
+    },
+    {
+      "run_key": "base:random:k2:seed1",
+      "run_id": "8e1679cb9476423ab1f20aa6c44482b1",
+      "code_revision": "50ae203dcd07fb729bc2aad5372b385671801996",
+      "removed_indices": [23, 26],
+      "metrics": {
+        "arc_challenge_acc_norm": 0.4308873720136519,
+        "piqa_acc_norm": 0.7568008705114254,
+        "winogrande_acc": 0.6961325966850829,
+        "hellaswag_acc_norm": 0.706831308504282,
+        "lambada_openai_acc": 0.43198137007568405,
+        "wikitext_word_perplexity": 20.933309612530962
+      },
+      "total_seconds": 3683.9219090999977
+    },
+    {
+      "run_key": "base:random:k2:seed2",
+      "run_id": "9bbaf0e21383498a90e9575709b3cc54",
+      "code_revision": "50ae203dcd07fb729bc2aad5372b385671801996",
+      "removed_indices": [3, 20],
+      "metrics": {
+        "arc_challenge_acc_norm": 0.4513651877133106,
+        "piqa_acc_norm": 0.7513601741022851,
+        "winogrande_acc": 0.5927387529597474,
+        "hellaswag_acc_norm": 0.6728739294961164,
+        "lambada_openai_acc": 0.5301765961575781,
+        "wikitext_word_perplexity": 13.49491893452118
+      },
+      "total_seconds": 2418.1788230000093
+    }
+  ],
+  "interpretation_limits": [
+    "The k=2 runs were inspected before the confirmatory protocol was frozen and are exploratory.",
+    "Three random controls are too few for a confirmatory distributional comparison.",
+    "The pilot covers one checkpoint and cannot test dependence on fine-tuning.",
+    "The baseline and pruned records use different code revisions; their benchmark implementation is identical, and the intervening revision only added the resumable grid runner and its tests."
+  ]
+}
