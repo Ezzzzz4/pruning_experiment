@@ -59,6 +59,12 @@ TASKS = [
 ]
 
 STRATEGIES = ["baseline", "bi", "random"]
+NON_FINITE_FLOAT_KEY = "__non_finite_float__"
+NON_FINITE_FLOATS = {
+    "nan": math.nan,
+    "positive_infinity": math.inf,
+    "negative_infinity": -math.inf,
+}
 
 
 @dataclass(frozen=True)
@@ -549,6 +555,104 @@ def json_default(value: Any) -> Any:
     raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
+def json_safe(value: Any) -> Any:
+    """Convert non-finite floats to explicit strict-JSON sentinel objects."""
+
+    numpy = import_module("numpy")
+    return _json_safe(value, numpy)
+
+
+def _json_safe(value: Any, numpy: Any) -> Any:
+    if isinstance(value, numpy.generic):
+        return _json_safe(value.item(), numpy)
+    if isinstance(value, float) and not math.isfinite(value):
+        if math.isnan(value):
+            label = "nan"
+        elif value > 0:
+            label = "positive_infinity"
+        else:
+            label = "negative_infinity"
+        return {NON_FINITE_FLOAT_KEY: label}
+    if isinstance(value, dict):
+        return {key: _json_safe(item, numpy) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item, numpy) for item in value]
+    return value
+
+
+def decode_non_finite_float(value: Any) -> Any:
+    """Decode one strict-JSON non-finite sentinel, leaving other values unchanged."""
+
+    if not isinstance(value, dict) or set(value) != {NON_FINITE_FLOAT_KEY}:
+        return value
+    label = value[NON_FINITE_FLOAT_KEY]
+    if label not in NON_FINITE_FLOATS:
+        raise ValueError(f"Unknown non-finite float label: {label!r}")
+    return NON_FINITE_FLOATS[label]
+
+
+def _non_finite_paths(
+    value: Any, path: tuple[Any, ...] = ()
+) -> list[tuple[tuple[Any, ...], float]]:
+    numpy = import_module("numpy")
+    findings: list[tuple[tuple[Any, ...], float]] = []
+
+    def visit(item: Any, item_path: tuple[Any, ...]) -> None:
+        if isinstance(item, numpy.generic):
+            item = item.item()
+        if isinstance(item, float) and not math.isfinite(item):
+            findings.append((item_path, item))
+        elif isinstance(item, dict):
+            for key, child in item.items():
+                visit(child, (*item_path, key))
+        elif isinstance(item, (list, tuple)):
+            for index, child in enumerate(item):
+                visit(child, (*item_path, index))
+
+    visit(value, path)
+    return findings
+
+
+def validate_non_finite_evaluation(
+    merged: dict[str, Any], samples: list[dict[str, Any]]
+) -> None:
+    """Allow only catastrophic WikiText values with an unambiguous direction."""
+
+    aggregate_metrics = {
+        "bits_per_byte,none",
+        "byte_perplexity,none",
+        "word_perplexity,none",
+    }
+    for path, value in _non_finite_paths(merged):
+        allowed = (
+            len(path) == 3
+            and path[:2] == ("results", "wikitext")
+            and path[2] in aggregate_metrics
+            and value == math.inf
+        )
+        if not allowed:
+            raise ValueError(f"Invalid non-finite evaluation value at merged{path}: {value}")
+
+    document_log_likelihood_paths = {
+        ("sample", "bits_per_byte", 0),
+        ("sample", "byte_perplexity", 0),
+        ("sample", "filtered_resps", 0),
+        ("sample", "resps", 0, 0),
+        ("sample", "word_perplexity", 0),
+    }
+    for sample_index, sample in enumerate(samples):
+        for path, value in _non_finite_paths(sample):
+            allowed = (
+                sample.get("task") == "wikitext"
+                and path in document_log_likelihood_paths
+                and value == -math.inf
+            )
+            if not allowed:
+                raise ValueError(
+                    f"Invalid non-finite sample value at samples[{sample_index}]{path}: {value}"
+                )
+
+
 def append_unique_jsonl(path: Path, record: dict[str, Any], unique_key: str = "run_id") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -560,7 +664,8 @@ def append_unique_jsonl(path: Path, record: dict[str, Any], unique_key: str = "r
                 raise RuntimeError(f"Duplicate {unique_key} {record.get(unique_key)!r} in {path}.")
     with path.open("a", encoding="utf-8") as handle:
         handle.write(
-            json.dumps(record, sort_keys=True, default=json_default, allow_nan=False) + "\n"
+            json.dumps(json_safe(record), sort_keys=True, default=json_default, allow_nan=False)
+            + "\n"
         )
 
 
@@ -572,7 +677,10 @@ def append_sample_jsonl(path: Path, run_id: str, samples: list[dict[str, Any]]) 
         for sample in samples:
             record = {"run_id": run_id, **sample}
             handle.write(
-                json.dumps(record, sort_keys=True, default=json_default, allow_nan=False) + "\n"
+                json.dumps(
+                    json_safe(record), sort_keys=True, default=json_default, allow_nan=False
+                )
+                + "\n"
             )
 
 
@@ -674,6 +782,8 @@ def base_provenance(config: RunConfig, device: str) -> dict[str, Any]:
             "lm_eval": package_version("lm_eval"),
             "datasets": package_version("datasets"),
             "numpy": package_version("numpy"),
+            "pandas": package_version("pandas"),
+            "pyarrow": package_version("pyarrow"),
             "scipy": package_version("scipy"),
             "matplotlib": package_version("matplotlib"),
         },
@@ -785,6 +895,7 @@ def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str,
             result, elapsed = simple_evaluate_one_task(hflm, task, config.limit)
             task_results.append((task, result, elapsed))
         merged, samples = merge_task_results(task_results)
+        validate_non_finite_evaluation(merged, samples)
         gpu_runtime = None
         if monitor is not None:
             gpu_runtime = stop_gpu_monitor(monitor, telemetry_path)

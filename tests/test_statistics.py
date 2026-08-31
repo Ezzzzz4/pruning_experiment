@@ -8,6 +8,8 @@ from experiments.statistics import (
     holm_adjust,
     mcnemar_exact,
     primary_permutation_analysis,
+    weighted_log_likelihood_sum,
+    wikitext_word_perplexity,
 )
 
 
@@ -51,6 +53,17 @@ def test_mcnemar_exact_counts_paired_disagreements():
     assert math.isclose(result["one_sided_p"], 0.5)
 
 
+def test_mcnemar_rejects_non_finite_or_non_binary_correctness():
+    bi = {"a": {"acc": {"__non_finite_float__": "nan"}}}
+    random_samples = {"a": {"acc": 0.0}}
+
+    with pytest.raises(ValueError, match="Invalid binary metric"):
+        mcnemar_exact(bi, random_samples, "acc")
+
+    with pytest.raises(ValueError, match="Invalid binary metric"):
+        mcnemar_exact({"a": {"acc": 0.5}}, random_samples, "acc")
+
+
 def test_binary_bootstrap_ci_is_reproducible():
     import numpy as np
 
@@ -85,9 +98,38 @@ def test_primary_analysis_ranks_bi_against_twenty_global_permutations():
             for seed in range(3, 23)
         ],
     }
+    catastrophic_key = "instruct:random:k4:seed3"
+    records[catastrophic_key] = ppl_record(
+        catastrophic_key,
+        {"__non_finite_float__": "positive_infinity"},
+    )
 
     result = primary_permutation_analysis(records, protocol)
 
     assert result["primary"]["one_sided_exact_p"] == pytest.approx(1 / 21)
+    assert result["primary"]["random"]["3"] == math.inf
+    assert result["model_specific_descriptive"]["instruct"]["random_ppl"]["3"] == math.inf
     assert result["robustness"]["one_sided_exact_p"] == pytest.approx(1 / 21)
     assert result["edge_diagnostic"]["edge_free_count"] == 20
+
+
+def test_wikitext_perplexity_decodes_positive_infinity_as_worst_value():
+    record = ppl_record(
+        "base:random:k4:seed13",
+        {"__non_finite_float__": "positive_infinity"},
+    )
+
+    assert wikitext_word_perplexity(record) == math.inf
+
+
+def test_weighted_log_likelihood_sum_handles_unselected_negative_infinity():
+    import numpy as np
+
+    counts = np.array([[1, 0], [0, 1], [1, 1]])
+    values = np.array([-2.0, -math.inf])
+
+    totals = weighted_log_likelihood_sum(counts, values)
+
+    assert totals[0] == -2.0
+    assert totals[1] == -math.inf
+    assert totals[2] == -math.inf

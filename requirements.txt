@@ -4,6 +4,8 @@ torch==2.11.0+cu128
 triton-windows==3.6.0.post25; platform_system == "Windows"
 transformers==5.15.0
 datasets==5.0.1
+pandas==2.2.3
+pyarrow==21.0.0
 numpy==2.4.6
 scipy==1.17.1
 matplotlib==3.11.1

@@ -11,6 +11,8 @@ from typing import Any, Iterable
 import numpy as np
 from scipy.stats import binomtest, rankdata
 
+from experiments.benchmark import decode_non_finite_float, json_safe
+
 
 MODEL_KEYS = ("base", "instruct", "math")
 PERMUTATION_SEEDS = tuple(range(3, 23))
@@ -63,9 +65,9 @@ def require_records(
 
 
 def wikitext_word_perplexity(record: dict[str, Any]) -> float:
-    value = record["results"]["results"]["wikitext"]["word_perplexity,none"]
-    value = float(value)
-    if not math.isfinite(value) or value <= 0:
+    raw_value = record["results"]["results"]["wikitext"]["word_perplexity,none"]
+    value = float(decode_non_finite_float(raw_value))
+    if math.isnan(value) or value == -math.inf or value <= 0:
         raise ValueError(f"Invalid WikiText word perplexity in {record['provenance']['run_key']}: {value}")
     return value
 
@@ -213,11 +215,32 @@ def load_task_samples(record: dict[str, Any], task: str) -> dict[str, dict[str, 
 def wikitext_document_arrays(record: dict[str, Any]) -> tuple[list[str], np.ndarray, np.ndarray]:
     samples = load_task_samples(record, "wikitext")
     keys = sorted(samples)
-    log_likelihood = np.array([float(samples[key]["word_perplexity"][0]) for key in keys])
+    log_likelihood = np.array(
+        [
+            float(decode_non_finite_float(samples[key]["word_perplexity"][0]))
+            for key in keys
+        ]
+    )
     words = np.array([float(samples[key]["word_perplexity"][1]) for key in keys])
-    if np.any(words <= 0) or not np.all(np.isfinite(log_likelihood)):
+    if (
+        np.any(words <= 0)
+        or np.any(np.isnan(log_likelihood))
+        or np.any(np.isposinf(log_likelihood))
+    ):
         raise ValueError(f"Invalid WikiText document values in {record['provenance']['run_key']}.")
     return keys, log_likelihood, words
+
+
+def weighted_log_likelihood_sum(counts: np.ndarray, values: np.ndarray) -> np.ndarray:
+    """Sum document log likelihoods without producing 0 * -inf NaNs."""
+
+    negative_infinity = np.isneginf(values)
+    finite_values = np.where(negative_infinity, 0.0, values)
+    totals = counts @ finite_values
+    if np.any(negative_infinity):
+        includes_catastrophic_document = counts[:, negative_infinity].sum(axis=1) > 0
+        totals[includes_catastrophic_document] = -math.inf
+    return totals
 
 
 def paired_document_bootstrap(
@@ -252,6 +275,8 @@ def paired_document_bootstrap(
     observed_global = {candidate: 0.0 for candidate in candidate_names}
     for model_key in MODEL_KEYS:
         _, baseline_ll, baseline_words = baseline_arrays[model_key]
+        if np.any(np.isneginf(baseline_ll)):
+            raise ValueError(f"Baseline WikiText log likelihood is -inf for {model_key}.")
         for candidate in candidate_names:
             _, candidate_ll, candidate_words = candidate_arrays[model_key][candidate]
             if not np.array_equal(candidate_words, baseline_words):
@@ -272,13 +297,13 @@ def paired_document_bootstrap(
     global_values = {candidate: np.zeros(iterations) for candidate in candidate_names}
     for model_key in MODEL_KEYS:
         _, baseline_ll, baseline_words = baseline_arrays[model_key]
-        baseline_ll_sum = counts @ baseline_ll
+        baseline_ll_sum = weighted_log_likelihood_sum(counts, baseline_ll)
         baseline_word_sum = counts @ baseline_words
         for candidate in candidate_names:
             _, candidate_ll, candidate_words = candidate_arrays[model_key][candidate]
             if not np.array_equal(candidate_words, baseline_words):
                 raise ValueError(f"WikiText word weights differ for {model_key}/{candidate}.")
-            candidate_ll_sum = counts @ candidate_ll
+            candidate_ll_sum = weighted_log_likelihood_sum(counts, candidate_ll)
             log_ratio = (-candidate_ll_sum + baseline_ll_sum) / baseline_word_sum
             global_values[candidate] += log_ratio / len(MODEL_KEYS)
 
@@ -315,8 +340,10 @@ def mcnemar_exact(bi: dict[str, dict[str, Any]], random_samples: dict[str, dict[
     bi_only = 0
     random_only = 0
     for key in bi:
-        bi_correct = bool(bi[key][metric])
-        random_correct = bool(random_samples[key][metric])
+        bi_correct = binary_correctness(bi[key][metric], f"bi/{key}/{metric}")
+        random_correct = binary_correctness(
+            random_samples[key][metric], f"random/{key}/{metric}"
+        )
         bi_only += bi_correct and not random_correct
         random_only += random_correct and not bi_correct
     discordant = bi_only + random_only
@@ -329,6 +356,19 @@ def mcnemar_exact(bi: dict[str, dict[str, Any]], random_samples: dict[str, dict[
         "discordant": discordant,
         "one_sided_p": float(p_value),
     }
+
+
+def binary_correctness(value: Any, context: str) -> bool:
+    value = decode_non_finite_float(value)
+    if isinstance(value, bool):
+        return value
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Invalid binary metric at {context}: {value!r}") from exc
+    if not math.isfinite(numeric) or numeric not in {0.0, 1.0}:
+        raise ValueError(f"Invalid binary metric at {context}: {value!r}")
+    return bool(numeric)
 
 
 def full_task_mcnemar(records: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -432,7 +472,7 @@ def main(argv: list[str] | None = None) -> int:
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
-        json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n",
+        json.dumps(json_safe(report), indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",
     )
     print(json.dumps({"output": str(args.output), "status": "succeeded"}, sort_keys=True))

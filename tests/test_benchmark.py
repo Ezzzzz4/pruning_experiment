@@ -56,6 +56,63 @@ def test_build_manifest_has_expected_frozen_permutation_grid():
     assert all(len(config["removed_indices"]) == 4 for config in primary_random)
 
 
+def test_non_finite_validation_allows_only_catastrophic_wikitext_direction():
+    merged = {
+        "results": {
+            "wikitext": {
+                "word_perplexity,none": float("inf"),
+                "byte_perplexity,none": float("inf"),
+                "bits_per_byte,none": float("inf"),
+            }
+        }
+    }
+    samples = [
+        {
+            "task": "wikitext",
+            "sample": {
+                "word_perplexity": [float("-inf"), 10],
+                "byte_perplexity": [float("-inf"), 40],
+                "bits_per_byte": [float("-inf"), 40],
+                "filtered_resps": [float("-inf")],
+                "resps": [[float("-inf")]],
+            },
+        }
+    ]
+
+    benchmark.validate_non_finite_evaluation(merged, samples)
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("-inf")])
+def test_non_finite_validation_rejects_invalid_wikitext_aggregate(value):
+    merged = {"results": {"wikitext": {"word_perplexity,none": value}}}
+
+    with pytest.raises(ValueError, match="Invalid non-finite evaluation value"):
+        benchmark.validate_non_finite_evaluation(merged, [])
+
+
+def test_non_finite_validation_rejects_multiple_choice_non_finite_sample():
+    samples = [{"task": "piqa", "sample": {"acc": float("nan")}}]
+
+    with pytest.raises(ValueError, match="Invalid non-finite sample value"):
+        benchmark.validate_non_finite_evaluation({"results": {}}, samples)
+
+
+@pytest.mark.parametrize(
+    "sample",
+    [
+        {"word_perplexity": [-1.0, float("-inf")]},
+        {"filtered_resps": [[float("-inf")]]},
+        {"resps": [float("-inf")]},
+        {"resps": [[0.0, float("-inf")]]},
+    ],
+)
+def test_non_finite_validation_rejects_wrong_wikitext_sample_position(sample):
+    samples = [{"task": "wikitext", "sample": sample}]
+
+    with pytest.raises(ValueError, match="Invalid non-finite sample value"):
+        benchmark.validate_non_finite_evaluation({"results": {}}, samples)
+
+
 def test_random_layer_selection_is_nested_for_same_seed():
     layers = list(range(12))
 

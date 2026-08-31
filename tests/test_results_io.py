@@ -40,6 +40,29 @@ def test_jsonl_writer_fails_on_unserializable_values(tmp_path):
         append_unique_jsonl(tmp_path / "runs.jsonl", {"run_id": "abc", "bad": object()})
 
 
+def test_jsonl_writers_preserve_non_finite_values_as_explicit_sentinels(tmp_path):
+    runs_path = tmp_path / "runs.jsonl"
+    samples_path = tmp_path / "samples.jsonl"
+
+    append_unique_jsonl(
+        runs_path,
+        {"run_id": "run-1", "positive": float("inf"), "nan": float("nan")},
+    )
+    append_sample_jsonl(
+        samples_path,
+        "run-1",
+        [{"task": "wikitext", "sample": {"word_perplexity": [float("-inf"), 10]}}],
+    )
+
+    run = json.loads(runs_path.read_text(encoding="utf-8"))
+    sample = json.loads(samples_path.read_text(encoding="utf-8"))
+    assert run["positive"] == {"__non_finite_float__": "positive_infinity"}
+    assert run["nan"] == {"__non_finite_float__": "nan"}
+    assert sample["sample"]["word_perplexity"][0] == {
+        "__non_finite_float__": "negative_infinity"
+    }
+
+
 def test_jsonl_writer_serializes_explicit_technical_types(tmp_path):
     torch = pytest.importorskip("torch")
     path = tmp_path / "runs.jsonl"
