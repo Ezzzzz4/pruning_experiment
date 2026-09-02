@@ -8,6 +8,7 @@ pandas==2.2.3
 pyarrow==21.0.0
 numpy==2.4.6
 scipy==1.17.1
+scikit-learn==1.8.0
 matplotlib==3.11.1
 pytest==9.1.1
 lm_eval[hf] @ git+https://github.com/EleutherAI/lm-evaluation-harness.git@8a07e1110d060de48cfc7a9a7987b7659060b60b

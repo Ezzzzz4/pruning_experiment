@@ -1,604 +1,319 @@
-"""
-Unified Visualization Generator
+"""Generate figures for the frozen lm-eval pruning experiment."""
 
-Generates publication-quality figures for all model types:
-- Layer importance heatmaps
-- Bathtub curves (normalized BI profiles)
-- Cross-model comparisons
-- Summary cards
+from __future__ import annotations
 
-Usage:
-    python visualize.py --type language    # Language model figures
-    python visualize.py --type reasoning   # Reasoning model figures  
-    python visualize.py --type comparison  # Cross-type comparisons
-    python visualize.py --type all         # Generate all figures
-"""
-
-import json
 import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
+import json
+import math
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any
 
-# Set publication style
-plt.style.use('seaborn-v0_8-whitegrid')
-plt.rcParams['font.family'] = 'sans-serif'
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.labelsize'] = 14
-plt.rcParams['axes.titlesize'] = 16
-plt.rcParams['figure.dpi'] = 150
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.stats import rankdata
 
-
-# ========== LOADERS ==========
-
-def load_results(results_dir: Path) -> Dict:
-    """Load all result files from a directory."""
-    results = {}
-    if not results_dir.exists():
-        return results
-        
-    # Support both naming conventions
-    files = list(results_dir.glob("*_benchmark.json")) + list(results_dir.glob("*_results.json"))
-    
-    for file in files:
-        with open(file) as f:
-            try:
-                data = json.load(f)
-                # Handle different JSON structures
-                if 'metadata' in data:
-                    model_name = data['metadata']['model_name']
-                elif 'model_name' in data:
-                    model_name = data['model_name']
-                else:
-                    model_name = file.stem.replace('_results', '').replace('_benchmark', '')
-                
-                # Normalize keys if needed
-                if 'configurations' in data and 'results' not in data:
-                    data['results'] = data.pop('configurations')
-                    
-                if 'results' in data:
-                    for res in data['results']:
-                        # Fix layer count key
-                        # Priority 1: Use 'n_removed' if available (explicit count)
-                        if 'n_removed' in res:
-                             res['layers_removed'] = res['n_removed']
-                        # Priority 2: Use 'layer_idx' if 'layers_removed' missing
-                        elif 'layers_removed' not in res and 'layer_idx' in res:
-                            res['layers_removed'] = res['layer_idx']
-                        
-                        # Fix: if layers_removed is a list, use its length or n_removed
-                        if 'layers_removed' in res and isinstance(res['layers_removed'], list):
-                             if 'n_removed' in res:
-                                 res['layers_removed'] = res['n_removed']
-                             else:
-                                 res['layers_removed'] = len(res['layers_removed'])
-
-                        # Fix score key for TinyLlama
-                        if 'score' not in res:
-                            # ... score fixing logic stays the same but duplicated here for safety block context ...
-                            if 'completion_accuracy' in res:
-                                res['score'] = res['completion_accuracy']
-                            elif 'accuracy' in res:
-                                res['score'] = res['accuracy']
-                
-                # Merge logic: if model already exists, update it with new keys
-                if model_name in results:
-                    # Smart merge: keep lists if they are longer, etc.
-                    # For now, just simplistic update of top-level keys
-                    # If 'results' exists in both, prefer the one with more items
-                    existing_data = results[model_name]
-                    
-                    if 'results' in data and 'results' in existing_data:
-                         if len(data['results']) < len(existing_data['results']):
-                             # Don't overwrite 'results' if new one is smaller/empty
-                             del data['results']
-                    
-                    existing_data.update(data)
-                else:
-                    results[model_name] = data
-                    
-            except Exception as e:
-                print(f"Warning: Failed to load {file}: {e}")
-                
-    return results
+from experiments.statistics import (
+    FULL_TASK_SEEDS,
+    MC_PRIMARY_METRICS,
+    MODEL_KEYS,
+    PERMUTATION_SEEDS,
+    PRIMARY_K,
+    load_successful_official_records,
+    read_json,
+    require_records,
+    resolve_repo_path,
+    wikitext_word_perplexity,
+)
 
 
-# ========== PLOT FUNCTIONS ==========
-
-def plot_heatmap(
-    model_name: str,
-    bi_scores: Dict[str, float],
-    output_path: Path,
-    component: str = 'main'
-) -> None:
-    """Create horizontal bar heatmap of layer importance."""
-    
-    if not bi_scores:
-        print(f"  Skipping heatmap for {model_name}: No BI scores available")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, max(6, len(bi_scores) * 0.25)))
-    
-    layers = sorted([int(k) for k in bi_scores.keys()])
-    scores = [bi_scores[str(l)] for l in layers]
-    
-    # Color mapping
-    colors = []
-    for score in scores:
-        if score < 0.1:
-            colors.append('#4CAF50')  # Green - redundant
-        elif score < 0.3:
-            colors.append('#FFC107')  # Amber - moderate
-        else:
-            colors.append('#F44336')  # Red - important
-    
-    bars = ax.barh(layers, scores, color=colors, edgecolor='black', linewidth=0.5, alpha=0.8)
-    
-    # Value labels
-    for i, (layer, score) in enumerate(zip(layers, scores)):
-        ax.text(score + 0.02, layer, f'{score:.3f}', va='center', fontsize=9)
-    
-    ax.set_xlabel('Block Influence (BI)')
-    ax.set_ylabel('Layer Index')
-    ax.set_title(f'{model_name} - Layer Importance')
-    ax.set_xlim(0, max(scores) * 1.15)
-    ax.set_yticks(layers)
-    ax.invert_yaxis()
-    
-    # Legend
-    legend_elements = [
-        mpatches.Patch(facecolor='#F44336', edgecolor='black', label='Critical (BI ≥ 0.3)'),
-        mpatches.Patch(facecolor='#FFC107', edgecolor='black', label='Moderate (0.1 ≤ BI < 0.3)'),
-        mpatches.Patch(facecolor='#4CAF50', edgecolor='black', label='Redundant (BI < 0.1)'),
-    ]
-    ax.legend(handles=legend_elements, loc='lower right')
-    ax.grid(axis='x', alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"  Saved: {output_path}")
+MODEL_LABELS = {
+    "base": "Qwen2.5-7B",
+    "instruct": "Qwen2.5-7B-Instruct",
+    "math": "Qwen2.5-Math-7B-Instruct",
+}
+FIGURE_NAMES = (
+    "primary_k4_permutation_ranking.png",
+    "k4_wikitext_ppl_by_model.png",
+    "k8_dose_response.png",
+    "canonical_vs_legacy_bi.png",
+    "k4_full_task_secondary_outcomes.png",
+)
+TASK_LABELS = {
+    "arc_challenge": "ARC-C",
+    "piqa": "PIQA",
+    "winogrande": "Winogrande",
+    "hellaswag": "HellaSwag",
+    "lambada_openai": "Lambada",
+}
 
 
-def plot_line_graph(
-    model_name: str,
-    results_data: Dict,
-    output_path: Path,
-    metric_name: str = "Accuracy"
-) -> None:
-    """Create line graph for pruning sensitivity (Accuracy/Score vs Layers Removed)."""
-    
-    if 'results' not in results_data or not results_data['results']:
-        print(f"  Skipping pruning plot for {model_name}: No benchmark results available")
-        return
-
-    # Extract data points
-    configs = []
-    scores = []
-    for res in results_data['results']:
-        if 'layers_removed' in res and 'score' in res:
-            configs.append(int(res['layers_removed']))
-            scores.append(res['score'])
-            
-    if not configs:
-        print(f"  Skipping pruning plot for {model_name}: Valid data points not found")
-        return
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Check if reasoning model (heuristic) to pick color
-    is_reasoning = "gsm8k" in str(output_path).lower() or "math" in model_name.lower() or "deepseek" in model_name.lower()
-    color = '#9C27B0' if "math" in model_name.lower() else ('#2196F3' if is_reasoning else '#4CAF50')
-    
-    # Plot line
-    ax.plot(configs, scores, marker='o', linewidth=3, markersize=10, 
-             color=color, label=metric_name)
-    
-    # Fill area under line lightly
-    ax.fill_between(configs, scores, alpha=0.1, color=color)
-
-    # Add value labels
-    for x, y in zip(configs, scores):
-        ax.annotate(f'{y:.1f}%', 
-                    (x, y), 
-                    textcoords="offset points", 
-                    xytext=(0, 10), 
-                    ha='center',
-                    fontsize=11,
-                    fontweight='bold')
-
-    # Add baseline line
-    baseline = scores[0]
-    ax.axhline(y=baseline, color='gray', linestyle='--', alpha=0.7, label='Baseline')
-
-    # Styling
-    ax.set_xlabel('Number of Layers Removed', fontsize=12)
-    ax.set_ylabel(f'{metric_name} (%)', fontsize=12)
-    ax.set_title(f'{model_name} - Pruning Sensitivity', fontsize=14, fontweight='bold', pad=15)
-    ax.set_ylim(0, 105)
-    ax.grid(True, linestyle='--', alpha=0.4)
-    ax.set_xticks(configs)
-    ax.legend()
-    
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"  Saved: {output_path}")
-
-
-def plot_bi_scores(
-    model_name: str,
-    bi_scores: Dict[str, float],
-    output_path: Path
-) -> None:
-    """Create BI score curve (normalized position vs BI)."""
-    
-    if not bi_scores:
-        # User requested to silence this
-        # print(f"  Skipping bathtub curve for {model_name}: No BI scores available")
-        return
-
-    fig, ax = plt.subplots(figsize=(10, 6))
-    
-    layers = sorted([int(k) for k in bi_scores.keys()])
-    scores = [bi_scores[str(l)] for l in layers]
-    n_layers = len(layers)
-    positions = [l / (n_layers - 1) for l in layers] if n_layers > 1 else [0.0]
-    
-    ax.plot(positions, scores, 'o-', linewidth=2, markersize=8, color='#2196F3')
-    ax.fill_between(positions, scores, alpha=0.2, color='#2196F3')
-    
-    ax.axhline(y=0.1, color='green', linestyle='--', linewidth=1.5, 
-               label='Pruning threshold (0.1)')
-    
-    ax.set_xlabel('Normalized Layer Position (0=first, 1=last)')
-    ax.set_ylabel('Block Influence (BI)')
-    ax.set_title(f'{model_name} - Block Influence Scores')
-    ax.set_xlim(-0.05, 1.05)
-    ax.set_ylim(0, max(scores) * 1.1 if scores else 1.0)
-    ax.legend(loc='upper right')
-    
-    # Annotate key layers
-    for i, (pos, score) in enumerate(zip(positions, scores)):
-        if score > 0.15 or i == 0 or i == n_layers - 1 or i == 2:
-            ax.annotate(f'L{i}', (pos, score), textcoords="offset points",
-                       xytext=(0, 10), ha='center', fontsize=9)
-    
-    plt.tight_layout()
-    try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        print(f"  Saved: {output_path}")
-    except Exception as e:
-        print(f"Error saving BI scores plot: {e}")
-        plt.close()
-
-
-def plot_comparison(
-    models_data: Dict[str, Dict],
-    output_path: Path,
-    title: str = "Model Comparison"
-) -> None:
-    """Plot multiple models on same curve for comparison."""
-    
-    valid_models = {name: data for name, data in models_data.items() 
-                   if 'main' in data and 'bi_scores' in data['main'] and data['main']['bi_scores']}
-    
-    if len(valid_models) < 2:
-        # User requested to silence this
-        # print(f"  Skipping comparison plot {output_path}: Need at least 2 models with BI scores")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 7))
-    
-    colors = ['#2196F3', '#E91E63', '#4CAF50', '#FF9800', '#9C27B0']
-    markers = ['o', 's', '^', 'D', 'v']
-    
-    for i, (model_name, data) in enumerate(valid_models.items()):
-        bi_scores = data['main']['bi_scores']
-        layers = sorted([int(k) for k in bi_scores.keys()])
-        scores = [bi_scores[str(l)] for l in layers]
-        n_layers = len(layers)
-        positions = [l / (n_layers - 1) for l in layers] if n_layers > 1 else [0.0]
-        
-        color = colors[i % len(colors)]
-        marker = markers[i % len(markers)]
-        
-        ax.plot(positions, scores, f'{marker}-', linewidth=2, markersize=6,
-                color=color, label=model_name, alpha=0.8)
-    
-    ax.axhline(y=0.1, color='green', linestyle=':', linewidth=2, 
-               label='Pruning threshold')
-    
-    ax.set_xlabel('Normalized Layer Position')
-    ax.set_ylabel('Block Influence (BI)')
-    ax.set_title(title)
-    ax.set_xlim(-0.05, 1.05)
-    ax.legend(loc='upper right')
-    ax.grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        print(f"  Saved: {output_path}")
-    except Exception as e:
-        print(f"Error saving comparison plot: {e}")
-        plt.close()
-
-
-def plot_summary_card(
-    model_name: str,
-    results: Dict,
-    output_path: Path
-) -> None:
-    """Create infographic-style summary card."""
-    
-    if 'main' not in results or 'bi_scores' not in results['main'] or not results['main']['bi_scores']:
-         print(f"  Skipping summary card for {model_name}: No BI scores available")
-         return
-
-    stats = results['main'].get('stats', {})
-    bi_scores = results['main']['bi_scores']
-    
-    if not stats:
-        # Compute stats if not present
-        scores = list(bi_scores.values())
-        redundant = [i for i, s in enumerate(scores) if s < 0.1]
-        stats = {
-            'total_layers': len(bi_scores),
-            'redundant_count': len(redundant),
-            'redundant_pct': len(redundant) / len(bi_scores) * 100 if scores else 0,
-            'mean_bi': np.mean(scores) if scores else 0,
-            'layer_2_bi': bi_scores.get('2', bi_scores.get(2, 0))
+def set_style() -> None:
+    plt.style.use("seaborn-v0_8-whitegrid")
+    plt.rcParams.update(
+        {
+            "figure.dpi": 140,
+            "savefig.dpi": 220,
+            "font.size": 10,
+            "axes.titlesize": 12,
+            "axes.labelsize": 10,
         }
-    
-    fig, ax = plt.subplots(figsize=(8, 6))
-    ax.axis('off')
-    
-    ax.text(0.5, 0.95, f'{model_name}', 
-            fontsize=20, fontweight='bold', ha='center', transform=ax.transAxes)
-    
-    box_props = dict(boxstyle='round,pad=0.4', facecolor='lightblue', alpha=0.5)
-    
-    ax.text(0.2, 0.7, f"Total Layers\n{stats['total_layers']}", 
-            fontsize=16, ha='center', va='center', transform=ax.transAxes,
-            bbox=box_props)
-    
-    ax.text(0.5, 0.7, f"Redundant\n{stats['redundant_count']} ({stats['redundant_pct']:.1f}%)", 
-            fontsize=16, ha='center', va='center', transform=ax.transAxes,
-            bbox=dict(boxstyle='round,pad=0.4', facecolor='lightgreen', alpha=0.5))
-    
-    ax.text(0.8, 0.7, f"Mean BI\n{stats['mean_bi']:.4f}", 
-            fontsize=16, ha='center', va='center', transform=ax.transAxes,
-            bbox=box_props)
-    
-    ax.text(0.5, 0.4, f"Layer 2 BI: {stats['layer_2_bi']:.4f}", 
-            fontsize=14, ha='center', va='center', transform=ax.transAxes)
-    
-    layer2_status = "HIGH" if stats['layer_2_bi'] > 0.2 else "LOW"
-    ax.text(0.5, 0.3, f"Layer 2 Phenomenon: {layer2_status}", 
-            fontsize=14, ha='center', va='center', transform=ax.transAxes,
-            fontweight='bold')
-    
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"  Saved: {output_path}")
-
-
-# ========== MAIN GENERATORS ==========
-
-def plot_benchmark_comparison(
-    models_data: Dict[str, Dict],
-    output_path: Path,
-    metric_name: str = "Accuracy"
-) -> None:
-    """Plot pruning sensitivity comparison for multiple models."""
-    
-    valid_models = {name: data for name, data in models_data.items() 
-                   if 'results' in data and data['results']}
-    
-    if len(valid_models) < 2:
-        print(f"  Skipping benchmark comparison {output_path}: Need at least 2 models with results")
-        return
-
-    fig, ax = plt.subplots(figsize=(12, 7))
-    
-    colors = ['#2196F3', '#E91E63', '#4CAF50', '#FF9800', '#9C27B0', '#795548', '#607D8B']
-    markers = ['o', 's', '^', 'D', 'v', 'P', '*']
-    
-    for i, (model_name, data) in enumerate(valid_models.items()):
-        configs = []
-        scores = []
-        for res in data['results']:
-            if 'layers_removed' in res and 'score' in res:
-                configs.append(int(res['layers_removed']))
-                scores.append(res['score'])
-        
-        # Sort by layers removed
-        points = sorted(zip(configs, scores))
-        if not points:
-            continue
-            
-        configs, scores = zip(*points)
-        
-        # Normalize relative to baseline for fair comparison if needed? 
-        # For now, plotting raw accuracy/score as requested.
-        
-        color = colors[i % len(colors)]
-        marker = markers[i % len(markers)]
-        
-        ax.plot(configs, scores, f'{marker}-', linewidth=2, markersize=8,
-                color=color, label=model_name, alpha=0.8)
-                
-    ax.axhline(y=0, color='gray', linestyle='-', linewidth=0.5, alpha=0.5)
-
-    ax.set_xlabel('Layers Removed')
-    ax.set_ylabel(metric_name)
-    ax.set_title("Benchmark Degradation Comparison")
-    ax.grid(True, linestyle='--', alpha=0.4)
-    ax.legend()
-    
-    plt.tight_layout()
-    try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, dpi=300, bbox_inches='tight')
-        plt.close()
-        print(f"  Saved: {output_path}")
-    except Exception as e:
-        print(f"Error saving benchmark comparison: {e}")
-        plt.close()
-
-
-def generate_for_type(model_type: str, base_dir: Path = Path("results")) -> None:
-    """Generate all visualizations for a model type."""
-    
-    data_dir = base_dir / "data" / model_type
-    fig_dir = base_dir / "figures" / model_type
-    fig_dir.mkdir(parents=True, exist_ok=True)
-    
-    print(f"\nLoading {model_type} results...")
-    results = load_results(data_dir)
-    
-    if not results:
-        print(f"  No results found in {data_dir}")
-        return
-    
-    print(f"  Found {len(results)} model(s)")
-    
-    for model_name, data in results.items():
-        print(f"\nGenerating figures for {model_name}...")
-        safe_name = model_name.lower().replace('-', '_').replace('.', '_').replace('/', '_')
-        
-        # 1. Pruning Sensitivity Line Graph (if benchmark results exist)
-        if 'results' in data and data['results']:
-            plot_line_graph(model_name, data, fig_dir / f"{safe_name}_pruning.png")
-        else:
-             print(f"  Skipping sensitivity plot for {model_name}: No benchmark data")
-        
-        # 2. Block Influence Visualizations (if BI scores exist)
-        if 'main' in data and 'bi_scores' in data['main'] and data['main']['bi_scores']:
-            bi_scores = data['main']['bi_scores']
-            
-            # Heatmap
-            plot_heatmap(model_name, bi_scores, 
-                         fig_dir / f"{safe_name}_heatmap.png")
-            
-            # BI Scores curve (formerly bathtub)
-            plot_bi_scores(model_name, bi_scores,
-                         fig_dir / f"{safe_name}_bi_scores.png")
-            
-            # Summary card
-            plot_summary_card(model_name, data,
-                              fig_dir / f"{safe_name}_summary.png")
-        else:
-            # User requested to silence this
-            # print(f"  Skipping BI plots for {model_name}: No BI scores")
-            pass
-            
-    # Generate Type-Specific Comparison (if multiple models have BI scores)
-    valid_bi_models = {name: d for name, d in results.items() if 'main' in d and 'bi_scores' in d['main']}
-    if len(valid_bi_models) > 1:
-        print(f"\nGenerating {model_type} BI comparison...")
-        # Use filename requested by user: cross_model_bi_comparison.png
-        plot_comparison(results, fig_dir / "cross_model_bi_comparison.png",
-                       f"{model_type.title()} Models - BI Comparison")
-                       
-    # Generate Type-Specific Benchmark Comparison
-    valid_bench_models = {name: d for name, d in results.items() if 'results' in d and d['results']}
-    if len(valid_bench_models) > 1:
-        print(f"\nGenerating {model_type} Benchmark comparison...")
-        plot_benchmark_comparison(results, fig_dir / "benchmark_comparison.png",
-                                "Task Performance (Accuracy/Perplexity)")
-
-
-def generate_cross_comparison(base_dir: Path = Path("results")) -> None:
-    """Generate comparison between language and reasoning models."""
-    
-    print("\nGenerating cross-model-type comparison...")
-    
-    fig_dir = base_dir / "figures" / "comparison"
-    fig_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Load all needed data
-    lang_results = load_results(base_dir / "data" / "language")
-    reasoning_results = load_results(base_dir / "data" / "reasoning")
-    
-    # Find specific models if available, otherwise fallback
-    target_lang = "Qwen2.5-1.5B-Instruct"
-    target_reasoning = "Qwen2.5-Math-1.5B-Instruct"
-    
-    lang_model_name = target_lang if target_lang in lang_results else None
-    reasoning_model_name = target_reasoning if target_reasoning in reasoning_results else None
-    
-    # Fallback to first available if target not found
-    if not lang_model_name and lang_results:
-        lang_model_name = list(lang_results.keys())[0]
-        print(f"  Note: {target_lang} not found, using {lang_model_name} instead.")
-        
-    if not reasoning_model_name and reasoning_results:
-        reasoning_model_name = list(reasoning_results.keys())[0]
-        print(f"  Note: {target_reasoning} not found, using {reasoning_model_name} instead.")
-        
-    if not lang_model_name or not reasoning_model_name:
-        print("  Skipping CoT vs LLM Comparison: Missing data for one or both categories.")
-        return
-
-    # Create the comparison
-    combined = {
-        f"General LLM ({lang_model_name})": lang_results[lang_model_name],
-        f"Reasoning CoT ({reasoning_model_name})": reasoning_results[reasoning_model_name]
-    }
-    
-    plot_comparison(
-        combined, 
-        fig_dir / "language_vs_reasoning_bi_comparison.png",
-        "Layer Redundancy: General LLM vs Reasoning Specialized"
     )
 
-    # Also check for DeepSeek
-    ds_name = "DeepSeek-R1-Distill-Qwen-1.5B"
-    if ds_name in reasoning_results:
-         combined_ds = {
-             f"General LLM ({lang_model_name})": lang_results[lang_model_name],
-             f"DeepSeek R1 ({ds_name})": reasoning_results[ds_name]
-         }
-         plot_comparison(
-            combined_ds,
-            fig_dir / "language_vs_deepseek_bi_comparison.png",
-            "Layer Redundancy: General LLM vs DeepSeek R1"
-         )
+
+def expected_figure_paths(output_dir: Path) -> list[Path]:
+    return [output_dir / name for name in FIGURE_NAMES]
 
 
-# ========== MAIN ==========
+def edge_touch_by_seed(protocol: dict[str, Any], k: int) -> dict[int, bool]:
+    output: dict[int, bool] = {}
+    for entry in protocol["permutations"]:
+        seed = int(entry["seed"])
+        output[seed] = any(
+            entry["by_model"][model_key][str(k)]["touches_edge"]
+            for model_key in MODEL_KEYS
+        )
+    return output
 
-def main():
-    parser = argparse.ArgumentParser(description="Visualization Generator")
-    parser.add_argument('--type', choices=['language', 'reasoning', 'vision', 'comparison', 'all'],
-                        default='all', help="Type of visualizations to generate")
-    args = parser.parse_args()
-    
-    base_dir = Path("results")
-    
-    if args.type in ['language', 'all']:
-        generate_for_type('language', base_dir)
-    
-    if args.type in ['reasoning', 'all']:
-        generate_for_type('reasoning', base_dir)
-    
-    if args.type in ['vision', 'all']:
-        generate_for_type('vision', base_dir)
-    
-    if args.type in ['comparison', 'all']:
-        generate_cross_comparison(base_dir)
-    
-    print("\n✅ Visualization generation complete!")
+
+def plot_primary_permutation(summary: dict[str, Any], protocol: dict[str, Any], output: Path) -> None:
+    primary = summary["primary_permutation"]["primary"]
+    edge_touch = edge_touch_by_seed(protocol, PRIMARY_K)
+    candidates = [("BI", float(primary["bi"]), False)]
+    candidates.extend(
+        (f"seed {seed}", float(primary["random"][str(seed)]), edge_touch[seed])
+        for seed in PERMUTATION_SEEDS
+    )
+    candidates.sort(key=lambda item: item[1])
+
+    labels = [item[0] for item in candidates]
+    values = [item[1] for item in candidates]
+    colors = [
+        "#1f77b4" if label == "BI" else "#d95f02" if touches_edge else "#4daf4a"
+        for label, _, touches_edge in candidates
+    ]
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+    ax.bar(range(len(values)), values, color=colors)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=60, ha="right")
+    ax.set_ylabel("mean log(PPL pruned / baseline)")
+    ax.set_title("Primary k=4 WikiText permutation ranking")
+    ax.text(
+        0.99,
+        0.96,
+        f"one-sided exact p = {primary['one_sided_exact_p']:.4f}",
+        transform=ax.transAxes,
+        ha="right",
+        va="top",
+    )
+    ax.legend(
+        handles=[
+            plt.Rectangle((0, 0), 1, 1, color="#1f77b4", label="BI"),
+            plt.Rectangle((0, 0), 1, 1, color="#4daf4a", label="random, edge-free"),
+            plt.Rectangle((0, 0), 1, 1, color="#d95f02", label="random, touches edge"),
+        ],
+        frameon=True,
+    )
+    fig.tight_layout()
+    fig.savefig(output)
+    plt.close(fig)
+
+
+def plot_model_k4_ppl(summary: dict[str, Any], output: Path) -> None:
+    model_specific = summary["primary_permutation"]["model_specific_descriptive"]
+    fig, axes = plt.subplots(1, len(MODEL_KEYS), figsize=(13, 4), sharey=False)
+
+    for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
+        data = model_specific[model_key]
+        seeds = np.array(PERMUTATION_SEEDS)
+        random_values = np.array(
+            [float(data["random_ppl"][str(seed)]) for seed in PERMUTATION_SEEDS]
+        )
+        ax.scatter(seeds, random_values, color="#808080", s=24)
+        ax.axhline(float(data["baseline_ppl"]), color="#333333", linestyle="--", label="baseline")
+        ax.axhline(float(data["bi_ppl"]), color="#1f77b4", linewidth=2, label="BI")
+        ax.set_yscale("log")
+        ax.set_title(MODEL_LABELS[model_key])
+        ax.set_xlabel("frozen permutation seed")
+        ax.set_xticks([3, 6, 9, 12, 15, 18, 21])
+        ax.set_ylabel("WikiText word perplexity")
+        ax.legend(frameon=True)
+
+    fig.suptitle("k=4 WikiText PPL by model")
+    fig.tight_layout()
+    fig.savefig(output)
+    plt.close(fig)
+
+
+def log_ratio(record: dict[str, Any], baseline_ppl: float) -> float:
+    value = wikitext_word_perplexity(record)
+    if math.isinf(value):
+        return math.inf
+    return math.log(value / baseline_ppl)
+
+
+def plot_k8_dose_response(records: dict[str, dict[str, Any]], output: Path) -> None:
+    fig, axes = plt.subplots(1, len(MODEL_KEYS), figsize=(13, 4), sharey=False)
+
+    for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
+        baseline = wikitext_word_perplexity(
+            require_records(records, [f"{model_key}:baseline:k0:seednone"])[0]
+        )
+        bi_k4 = log_ratio(
+            require_records(records, [f"{model_key}:bi:k4:seednone"])[0], baseline
+        )
+        bi_k8 = log_ratio(
+            require_records(records, [f"{model_key}:bi:k8:seednone"])[0], baseline
+        )
+        random_k4 = [
+            log_ratio(
+                require_records(records, [f"{model_key}:random:k4:seed{seed}"])[0],
+                baseline,
+            )
+            for seed in PERMUTATION_SEEDS
+        ]
+        random_k8 = [
+            log_ratio(
+                require_records(records, [f"{model_key}:random:k8:seed{seed}"])[0],
+                baseline,
+            )
+            for seed in PERMUTATION_SEEDS
+        ]
+
+        ax.boxplot([random_k4, random_k8], tick_labels=["random k=4", "random k=8"])
+        ax.scatter([1, 2], [bi_k4, bi_k8], color="#1f77b4", s=48, zorder=3, label="BI")
+        ax.set_title(MODEL_LABELS[model_key])
+        ax.set_ylabel("log(PPL pruned / baseline)")
+        ax.legend(frameon=True)
+
+    fig.suptitle("Dose response on WikiText")
+    fig.tight_layout()
+    fig.savefig(output)
+    plt.close(fig)
+
+
+def rank_profile(scores: dict[str, float]) -> tuple[list[int], np.ndarray]:
+    layers = sorted(int(layer) for layer in scores)
+    values = np.array([float(scores[str(layer)]) for layer in layers])
+    return layers, rankdata(values, method="average")
+
+
+def plot_bi_legacy_profiles(summary: dict[str, Any], protocol: dict[str, Any], output: Path) -> None:
+    fig, axes = plt.subplots(len(MODEL_KEYS), 1, figsize=(10, 8), sharex=True, sharey=True)
+
+    for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
+        bi_path = resolve_repo_path(protocol["models"][model_key]["bi_path"])
+        bundle = read_json(bi_path)
+        canonical_layers, canonical_ranks = rank_profile(bundle["canonical"])
+        legacy_layers, legacy_ranks = rank_profile(bundle["legacy"])
+        if canonical_layers != legacy_layers:
+            raise ValueError(f"Canonical and legacy layers differ in {bi_path}.")
+        rho = summary["canonical_legacy_spearman"][model_key]
+        ax.plot(canonical_layers, canonical_ranks, marker="o", markersize=3, label="canonical")
+        ax.plot(legacy_layers, legacy_ranks, marker="s", markersize=3, label="legacy")
+        ax.set_title(f"{MODEL_LABELS[model_key]} (Spearman rho = {rho:.3f})")
+        ax.set_ylabel("rank, lower = pruned earlier")
+        ax.invert_yaxis()
+        ax.legend(frameon=True, loc="lower right")
+
+    axes[-1].set_xlabel("layer index")
+    fig.suptitle("Canonical vs legacy BI layer rankings")
+    fig.tight_layout()
+    fig.savefig(output)
+    plt.close(fig)
+
+
+def plot_full_task_secondary(summary: dict[str, Any], output: Path) -> None:
+    cis = summary["full_task_bootstrap_cis"]
+    tasks = list(MC_PRIMARY_METRICS)
+    x = np.arange(len(tasks))
+    fig, axes = plt.subplots(len(MODEL_KEYS), 1, figsize=(11, 8), sharex=True, sharey=True)
+
+    for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
+        baseline_key = f"{model_key}:baseline:k0:seednone"
+        bi_key = f"{model_key}:bi:k{PRIMARY_K}:seednone"
+        baseline = {
+            task: float(cis[model_key][baseline_key][task]["estimate"])
+            for task in tasks
+        }
+        bi_delta = np.array(
+            [(float(cis[model_key][bi_key][task]["estimate"]) - baseline[task]) * 100 for task in tasks]
+        )
+
+        offsets = np.linspace(-0.18, 0.18, len(FULL_TASK_SEEDS))
+        for index, (seed, offset) in enumerate(zip(FULL_TASK_SEEDS, offsets, strict=True)):
+            random_key = f"{model_key}:random:k{PRIMARY_K}:seed{seed}"
+            random_delta = np.array(
+                [
+                    (float(cis[model_key][random_key][task]["estimate"]) - baseline[task]) * 100
+                    for task in tasks
+                ]
+            )
+            ax.scatter(
+                x + offset,
+                random_delta,
+                color="#9e9e9e",
+                s=22,
+                alpha=0.8,
+                label="random controls" if index == 0 else None,
+            )
+
+        ax.scatter(x, bi_delta, color="#1f77b4", s=46, zorder=3, label="BI")
+        ax.axhline(0, color="#333333", linewidth=0.8)
+        ax.set_title(MODEL_LABELS[model_key])
+        ax.set_ylabel("accuracy change vs baseline (pp)")
+        ax.legend(frameon=True, loc="lower left")
+
+    axes[-1].set_xticks(x)
+    axes[-1].set_xticklabels([TASK_LABELS[task] for task in tasks], rotation=20, ha="right")
+    fig.suptitle("Secondary k=4 full-task outcomes")
+    fig.tight_layout()
+    fig.savefig(output)
+    plt.close(fig)
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Generate confirmatory experiment figures.")
+    parser.add_argument("--summary", type=Path, default=Path("results/confirmatory/summary.json"))
+    parser.add_argument("--protocol", type=Path, default=Path("experiments/permutation_protocol.json"))
+    parser.add_argument("--results-root", type=Path, default=Path("results/lm_eval"))
+    parser.add_argument("--output-dir", type=Path, default=Path("results/confirmatory/figures"))
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    set_style()
+    summary = read_json(args.summary)
+    protocol = read_json(args.protocol)
+    records = load_successful_official_records(args.results_root)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+
+    plot_primary_permutation(
+        summary,
+        protocol,
+        args.output_dir / "primary_k4_permutation_ranking.png",
+    )
+    plot_model_k4_ppl(summary, args.output_dir / "k4_wikitext_ppl_by_model.png")
+    plot_k8_dose_response(records, args.output_dir / "k8_dose_response.png")
+    plot_bi_legacy_profiles(summary, protocol, args.output_dir / "canonical_vs_legacy_bi.png")
+    plot_full_task_secondary(
+        summary,
+        args.output_dir / "k4_full_task_secondary_outcomes.png",
+    )
+
+    print(
+        json.dumps(
+            {
+                "figures": [str(path) for path in expected_figure_paths(args.output_dir)],
+                "output_dir": str(args.output_dir),
+                "status": "succeeded",
+            },
+            sort_keys=True,
+        )
+    )
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

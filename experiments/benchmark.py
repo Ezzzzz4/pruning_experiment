@@ -472,8 +472,6 @@ def preselected_random_indices(
 
 
 def make_hflm(model: Any, tokenizer: Any, batch_size: str) -> Any:
-    from lm_eval.models.huggingface import HFLM
-
     if batch_size.startswith("auto"):
         raise ValueError(
             "batch_size=auto is disabled: lm-eval batch probing exhausted host memory "
@@ -485,6 +483,9 @@ def make_hflm(model: Any, tokenizer: Any, batch_size: str) -> Any:
         raise ValueError("batch_size must be an explicit positive integer.") from exc
     if fixed_batch_size <= 0:
         raise ValueError("batch_size must be an explicit positive integer.")
+
+    from lm_eval.models.huggingface import HFLM
+
     return HFLM(
         pretrained=model,
         tokenizer=tokenizer,
