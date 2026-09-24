@@ -13,6 +13,25 @@ class TinyTokenizer:
     eos_token = "<eos>"
 
 
+def official_config(**overrides):
+    kwargs = {
+        "model_key": "base",
+        "strategy": "baseline",
+        "k": 0,
+        "seed": None,
+        "official_run": True,
+        "device": "cuda",
+        "dtype": "float16",
+        "calibration_path": benchmark.Path(
+            "experiments/calibration/wikitext_2_raw_v1_seed1234_n128.jsonl"
+        ),
+        "bi_scores_path": benchmark.Path("experiments/bi/base.json"),
+        "protocol_manifest_path": benchmark.Path("experiments/experiment_manifest.json"),
+    }
+    kwargs.update(overrides)
+    return benchmark.RunConfig(**kwargs)
+
+
 def tiny_model_classes():
     nn = pytest.importorskip("torch.nn")
 
@@ -188,6 +207,159 @@ def test_parse_args_accepts_frozen_protocol_selection():
     assert args.tasks == ["wikitext"]
     assert args.removed_indices == [2, 5, 9, 12]
     assert args.protocol_manifest.name == "experiment_manifest.json"
+
+
+def test_official_config_rejects_limit_before_model_load():
+    config = official_config(limit=1)
+
+    with pytest.raises(ValueError, match="--limit"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_non_manifest_task_list():
+    config = official_config(tasks=("wikitext",))
+
+    with pytest.raises(ValueError, match="task list"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_wrong_fixed_indices():
+    config = official_config(
+        model_key="base",
+        strategy="random",
+        k=4,
+        seed=3,
+        tasks=(
+            "arc_challenge",
+            "piqa",
+            "winogrande",
+            "hellaswag",
+            "lambada_openai",
+            "wikitext",
+        ),
+        removed_indices=(1, 2, 3, 4),
+        selection_source="conditional_bi_label_permutation",
+    )
+
+    with pytest.raises(ValueError, match="removed indices"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+@pytest.mark.parametrize(
+    "field,value,pattern",
+    [
+        ("batch_size", "auto", "batch_size"),
+        ("device", "cpu", "--device cuda"),
+        ("dtype", "float32", "--dtype float16"),
+    ],
+)
+def test_official_config_rejects_incompatible_runtime_choices(field, value, pattern):
+    kwargs = {}
+    kwargs[field] = value
+    config = official_config(**kwargs)
+
+    with pytest.raises(ValueError, match=pattern):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_pinned_model_mapping_mismatch(monkeypatch):
+    monkeypatch.setitem(
+        benchmark.MODEL_REVISIONS,
+        "base",
+        {
+            "model_id": "Qwen/Qwen2.5-7B",
+            "revision": "wrong",
+        },
+    )
+    config = official_config()
+
+    with pytest.raises(ValueError, match="Pinned model mapping"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_missing_bi_bundle():
+    config = official_config(bi_scores_path=benchmark.Path("experiments/bi/missing.json"))
+
+    with pytest.raises(ValueError, match="BI bundle is missing"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_tampered_bi_bundle(tmp_path):
+    copied = tmp_path / "base.json"
+    bundle = json.loads(benchmark.Path("experiments/bi/base.json").read_text(encoding="utf-8"))
+    bundle["canonical"]["14"] = bundle["canonical"]["14"] + 1.0
+    copied.write_text(json.dumps(bundle, sort_keys=True), encoding="utf-8")
+    config = official_config(bi_scores_path=copied)
+
+    with pytest.raises(ValueError, match="Frozen text hash mismatch"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_accepts_copied_unchanged_bi_bundle(tmp_path):
+    copied = tmp_path / "base-copy.json"
+    copied.write_bytes(benchmark.Path("experiments/bi/base.json").read_bytes())
+    config = official_config(bi_scores_path=copied)
+
+    benchmark.validate_official_config_against_manifest(config)
+
+
+def test_official_config_rejects_alternate_calibration_path(tmp_path):
+    copied = tmp_path / "calibration.jsonl"
+    copied.write_bytes(
+        benchmark.Path(
+            "experiments/calibration/wikitext_2_raw_v1_seed1234_n128.jsonl"
+        ).read_bytes()
+    )
+    config = official_config(calibration_path=copied)
+
+    with pytest.raises(ValueError, match="calibration path"):
+        benchmark.validate_official_config_against_manifest(config)
+
+
+def test_all_manifest_configs_pass_official_preflight_with_frozen_files():
+    manifest = json.loads(
+        benchmark.Path("experiments/experiment_manifest.json").read_text(encoding="utf-8")
+    )
+    full_tasks = tuple(benchmark.TASKS)
+    for entry in manifest["configs"]:
+        config = benchmark.RunConfig(
+            model_key=entry["model_key"],
+            strategy=entry["strategy"],
+            k=entry["k"],
+            seed=entry["seed"],
+            official_run=True,
+            device="cuda",
+            dtype="float16",
+            tasks=tuple(entry["tasks"]),
+            calibration_path=benchmark.Path(
+                "experiments/calibration/wikitext_2_raw_v1_seed1234_n128.jsonl"
+            ),
+            bi_scores_path=benchmark.Path(f"experiments/bi/{entry['model_key']}.json"),
+            removed_indices=(
+                None
+                if "removed_indices" not in entry
+                else tuple(entry["removed_indices"])
+            ),
+            selection_source=entry.get("selection_source"),
+            protocol_manifest_path=benchmark.Path("experiments/experiment_manifest.json"),
+        )
+
+        benchmark.validate_official_config_against_manifest(config)
+        assert set(config.tasks).issubset(set(full_tasks))
+
+
+def test_unrecognized_bi_k_without_protocol_indices_is_rejected():
+    config = benchmark.RunConfig(
+        model_key="base",
+        strategy="bi",
+        k=6,
+        seed=None,
+        official_run=True,
+        bi_scores_path=benchmark.Path("experiments/bi/base.json"),
+    )
+
+    with pytest.raises(ValueError, match="Frozen protocol lacks BI indices"):
+        benchmark.frozen_bi_indices_for_config(config, {"bi_indices": {"4": [1, 2, 3, 4]}})
 
 
 def test_evaluation_context_is_bounded_for_laptop_memory(monkeypatch):

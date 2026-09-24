@@ -1,5 +1,5 @@
-# Archived Result Artifacts
+# Archived results
 
-These artifacts come from pre-rebuild SHA `45d15c73caa5fcbeb1bc147b99c8275d39aac3d0` and are retained for historical reference only.
+I retained the outputs from pre-rebuild commit `45d15c73caa5fcbeb1bc147b99c8275d39aac3d0` as a historical record.
 
-They are excluded from current evidence because they include invalid/noncanonical BI, custom toy/proxy benchmarks, missing provenance, and mixed/stale visualizations.
+I excluded them from the current analysis because they include invalid or noncanonical BI calculations, custom benchmarks based on small samples or proxy scores, incomplete provenance, and visualizations combining incompatible or outdated results.

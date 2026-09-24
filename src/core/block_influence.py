@@ -75,6 +75,8 @@ def compute_block_influence(
                     else:
                         per_example = _legacy_bi(input_hidden, output_hidden)
 
+                    if not torch.isfinite(per_example).all():
+                        raise ValueError(f"non-finite {mode} BI for layer {idx}")
                     totals[idx] += float(per_example.sum().item())
                     counts[idx] += int(per_example.numel())
     finally:
@@ -157,7 +159,7 @@ def _canonical_bi(
         raise ValueError("attention_mask must include at least one token per example")
 
     cosine = F.cosine_similarity(input_hidden.float(), output_hidden.float(), dim=-1)
-    distance = (1.0 - cosine) * mask.float()
+    distance = (1.0 - cosine).masked_fill(~mask, 0.0)
     return distance.sum(dim=1) / token_counts.float()
 
 

@@ -99,11 +99,11 @@ def plot_primary_permutation(summary: dict[str, Any], protocol: dict[str, Any], 
     ax.set_ylabel("mean log(PPL pruned / baseline)")
     ax.set_title("Primary k=4 WikiText permutation ranking")
     ax.text(
-        0.99,
+        0.35,
         0.96,
-        f"one-sided exact p = {primary['one_sided_exact_p']:.4f}",
+        f"Monte Carlo p = {primary['one_sided_exact_p']:.4f}\nunder layer-label invariance",
         transform=ax.transAxes,
-        ha="right",
+        ha="left",
         va="top",
     )
     ax.legend(
@@ -129,7 +129,7 @@ def plot_model_k4_ppl(summary: dict[str, Any], output: Path) -> None:
         random_values = np.array(
             [float(data["random_ppl"][str(seed)]) for seed in PERMUTATION_SEEDS]
         )
-        ax.scatter(seeds, random_values, color="#808080", s=24)
+        ax.scatter(seeds, random_values, color="#808080", s=24, label="random controls")
         ax.axhline(float(data["baseline_ppl"]), color="#333333", linestyle="--", label="baseline")
         ax.axhline(float(data["bi_ppl"]), color="#1f77b4", linewidth=2, label="BI")
         ax.set_yscale("log")
@@ -137,10 +137,10 @@ def plot_model_k4_ppl(summary: dict[str, Any], output: Path) -> None:
         ax.set_xlabel("frozen permutation seed")
         ax.set_xticks([3, 6, 9, 12, 15, 18, 21])
         ax.set_ylabel("WikiText word perplexity")
-        ax.legend(frameon=True)
 
-    fig.suptitle("k=4 WikiText PPL by model")
-    fig.tight_layout()
+    fig.suptitle("k=4 WikiText PPL by model (separate log scales)")
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=3)
+    fig.tight_layout(rect=(0, 0.08, 1, 1))
     fig.savefig(output)
     plt.close(fig)
 
@@ -153,7 +153,7 @@ def log_ratio(record: dict[str, Any], baseline_ppl: float) -> float:
 
 
 def plot_k8_dose_response(records: dict[str, dict[str, Any]], output: Path) -> None:
-    fig, axes = plt.subplots(1, len(MODEL_KEYS), figsize=(13, 4), sharey=False)
+    fig, axes = plt.subplots(1, len(MODEL_KEYS), figsize=(13, 4), sharey=True)
 
     for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
         baseline = wikitext_word_perplexity(
@@ -202,7 +202,7 @@ def plot_bi_legacy_profiles(summary: dict[str, Any], protocol: dict[str, Any], o
     fig, axes = plt.subplots(len(MODEL_KEYS), 1, figsize=(10, 8), sharex=True, sharey=True)
 
     for ax, model_key in zip(axes, MODEL_KEYS, strict=True):
-        bi_path = resolve_repo_path(protocol["models"][model_key]["bi_path"])
+        bi_path = resolve_repo_path(protocol["models"][model_key]["bi_path"].replace("\\", "/"))
         bundle = read_json(bi_path)
         canonical_layers, canonical_ranks = rank_profile(bundle["canonical"])
         legacy_layers, legacy_ranks = rank_profile(bundle["legacy"])
@@ -213,12 +213,12 @@ def plot_bi_legacy_profiles(summary: dict[str, Any], protocol: dict[str, Any], o
         ax.plot(legacy_layers, legacy_ranks, marker="s", markersize=3, label="legacy")
         ax.set_title(f"{MODEL_LABELS[model_key]} (Spearman rho = {rho:.3f})")
         ax.set_ylabel("rank, lower = pruned earlier")
-        ax.invert_yaxis()
-        ax.legend(frameon=True, loc="lower right")
 
+    axes[0].invert_yaxis()
     axes[-1].set_xlabel("layer index")
-    fig.suptitle("Canonical vs legacy BI layer rankings")
-    fig.tight_layout()
+    fig.suptitle("BI pipeline comparison: context length, precision, masking and aggregation differ")
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="lower center", ncol=2)
+    fig.tight_layout(rect=(0, 0.04, 1, 1))
     fig.savefig(output)
     plt.close(fig)
 
@@ -276,9 +276,28 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate confirmatory experiment figures.")
     parser.add_argument("--summary", type=Path, default=Path("results/confirmatory/summary.json"))
     parser.add_argument("--protocol", type=Path, default=Path("experiments/permutation_protocol.json"))
-    parser.add_argument("--results-root", type=Path, default=Path("results/lm_eval"))
+    parser.add_argument("--records", type=Path, default=Path("results/confirmatory/official_runs.jsonl"))
+    parser.add_argument("--results-root", type=Path, help="Optional local raw-run directory instead of the tracked export.")
     parser.add_argument("--output-dir", type=Path, default=Path("results/confirmatory/figures"))
     return parser.parse_args(argv)
+
+
+def load_exported_records(path: Path) -> dict[str, dict[str, Any]]:
+    records = {}
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            key = record["provenance"]["run_key"]
+            if record.get("status") != "succeeded" or record["config"].get("official_run") is not True:
+                raise ValueError(f"Non-official successful record in export: {key}")
+            if key in records:
+                raise ValueError(f"Duplicate run key in export: {key}")
+            records[key] = record
+    if not records:
+        raise ValueError(f"Empty record export: {path}")
+    return records
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -286,7 +305,11 @@ def main(argv: list[str] | None = None) -> int:
     set_style()
     summary = read_json(args.summary)
     protocol = read_json(args.protocol)
-    records = load_successful_official_records(args.results_root)
+    records = (
+        load_successful_official_records(args.results_root)
+        if args.results_root is not None
+        else load_exported_records(args.records)
+    )
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
     plot_primary_permutation(

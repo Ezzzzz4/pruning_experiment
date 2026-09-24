@@ -194,3 +194,31 @@ def test_rejects_unsupported_activation_shapes():
 
     with pytest.raises(ValueError, match=r"shape \[batch, seq, hidden\]"):
         compute_block_influence(model, model.layers, loader([row([0, 1], [1, 1])]))
+
+
+@pytest.mark.parametrize("mode", ["canonical", "legacy"])
+def test_non_finite_real_token_fails_and_releases_hooks(mode):
+    model = TinyDecoder([AddFirstHidden()])
+    with torch.no_grad():
+        model.embedding.weight[0].fill_(float("nan"))
+
+    with pytest.raises(ValueError, match="non-finite.*layer 0"):
+        compute_block_influence(
+            model, model.layers, loader([row([0, 1], [1, 1])]), mode=mode
+        )
+
+    assert model.training
+    assert not model.layers[0]._forward_hooks
+
+
+def test_padding_is_excluded_even_when_its_hidden_state_is_non_finite():
+    model = TinyDecoder([AddFirstHidden()])
+    with torch.no_grad():
+        model.embedding.weight[2].fill_(float("nan"))
+
+    scores = compute_block_influence(
+        model, model.layers, loader([row([0, 1, 2], [1, 1, 0])])
+    )
+
+    expected = (1.0 - 1.0 / math.sqrt(2.0)) / 2.0
+    assert scores == pytest.approx({0: expected})

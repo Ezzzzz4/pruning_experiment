@@ -2,7 +2,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from src.handlers.universal_handler import UniversalHandler
+from src.handlers.universal_handler import UniversalHandler, create_handler
 
 
 class ModuleListModel(nn.Module):
@@ -31,6 +31,39 @@ class CacheAwareModel(nn.Module):
             hidden = layer(hidden)
         cache = tuple(hidden.detach() for _ in self.layers) if use_cache else None
         return hidden, cache
+
+
+class ResNetLikeModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layer1 = nn.Sequential(nn.Linear(4, 4), nn.ReLU())
+        self.layer2 = nn.Sequential(nn.Linear(4, 4), nn.ReLU())
+        self.layer3 = nn.Sequential(nn.Linear(4, 4), nn.ReLU())
+        self.layer4 = nn.Sequential(nn.Linear(4, 4), nn.ReLU())
+
+
+class YoloLikeModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.model = nn.ModuleList([nn.Linear(4, 4), nn.Linear(4, 4)])
+
+    def predict(self):
+        raise RuntimeError("not used")
+
+
+class ConfiguredNonQwenModel(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.layers = nn.ModuleList([nn.Linear(4, 4) for _ in range(3)])
+        self.config = type(
+            "Config",
+            (),
+            {
+                "model_type": "not_qwen2",
+                "num_hidden_layers": 99,
+                "layer_types": ["a", "b", "c"],
+            },
+        )()
 
 
 @pytest.mark.parametrize("model_cls", [ModuleListModel, SequentialModel])
@@ -118,3 +151,21 @@ def test_pruned_output_is_identical_with_cache_enabled_or_disabled():
 
     torch.testing.assert_close(with_cache, without_cache, rtol=0.0, atol=0.0)
     assert len(cache) == 2
+
+
+@pytest.mark.parametrize("model_cls", [ResNetLikeModel, YoloLikeModel])
+def test_create_handler_uses_universal_handler_for_supported_local_structure(model_cls):
+    handler = create_handler(model_cls(), verbose=False)
+
+    assert isinstance(handler, UniversalHandler)
+
+
+def test_non_qwen_layer_pruning_does_not_rewrite_config_metadata():
+    model = ConfiguredNonQwenModel()
+    handler = UniversalHandler(model, verbose=False)
+
+    handler.remove_layer("main", 1, inplace=True)
+
+    assert len(model.layers) == 2
+    assert model.config.num_hidden_layers == 99
+    assert model.config.layer_types == ["a", "b", "c"]

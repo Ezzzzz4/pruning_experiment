@@ -1,8 +1,3 @@
-"""
-Universal Neural Network Layer Pruning
-
-A tool for discovering and removing redundant layers from neural networks.
-"""
+"""Block Influence scoring and layer removal for the Qwen pruning study."""
 
 __version__ = "0.1.0"
-__author__ = "Your Name"

@@ -1,10 +1,10 @@
 # Protocol implementation note — 2026-08-31
 
-The frozen layer selections, tasks, metrics, execution order, and statistical comparisons remain unchanged.
+I retained the frozen layer selections, tasks, metrics, execution order, and statistical comparisons during the implementation changes described below.
 
-`instruct:random:k4:seed13` first failed with a CUDA illegal-memory-access error. Two exact retries reached WikiText evaluation but produced non-finite floating-point values while removing the same frozen layers `[2, 6, 11, 22]`. Strict JSON serialization rejected those values, so neither retry could become a successful evidence record.
+`instruct:random:k4:seed13` first failed with a CUDA illegal-memory-access error. Two retries of the same frozen configuration reached WikiText evaluation but produced non-finite floating-point values while removing layers `[2, 6, 11, 22]`. Strict JSON serialization rejected those values, so neither retry produced a successful evidence record.
 
-The runner now preserves non-finite values as explicit strict-JSON sentinel objects:
+I revised the runner to preserve non-finite values as explicit strict-JSON sentinel objects:
 
 ```json
 {"__non_finite_float__": "positive_infinity"}
@@ -16,4 +16,4 @@ This is a representation change, not a metric substitution. Positive-infinite Wi
 
 The paired document bootstrap avoids the undefined product `0 * -inf`: a resample receives negative-infinite total log likelihood only when it includes a catastrophic document. All attempts remain in the append-only artifacts.
 
-The Windows environment also pins `pandas==2.2.3` and `pyarrow==21.0.0`. Windows Application Control blocked the newer transitive binary wheels; these versions load under the active policy. Model revisions, the harness revision, CUDA/PyTorch, and evaluation code are otherwise unchanged.
+I also pinned `pandas==2.2.3` and `pyarrow==21.0.0` in the Windows environment. Windows Application Control blocked the newer transitive binary wheels; the pinned versions load under the active policy. Model revisions, the harness revision, CUDA/PyTorch, and evaluation code are otherwise unchanged.

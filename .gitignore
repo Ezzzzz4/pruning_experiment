@@ -63,6 +63,7 @@ ipython_config.py
 # Environments
 .env
 .venv
+.venv*/
 env/
 venv/
 ENV/
@@ -82,10 +83,6 @@ Thumbs.db
 
 # Project specific
 .omx/
-# results/data/*.json # Commented out to allow portfolio results
-# results/data/*.csv
-!results/data/language/*.json
-!results/figures/language/*.png
 results/checkpoints/
 results/lm_eval/
 *.pt

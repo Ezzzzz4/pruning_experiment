@@ -2,11 +2,11 @@
 
 ## Status
 
-The repository contains a complete exploratory comparison for Qwen2.5-7B at `k=2`: one unpruned baseline, one Block Influence (BI) selection, and three seeded random selections. Every run evaluated the full six-task suite with `lm-evaluation-harness`, without sample limits. Each record contains 19,534 task or document samples.
+As of August 27, I had completed an exploratory comparison for Qwen2.5-7B at `k=2`: one unpruned baseline, one Block Influence (BI) selection, and three seeded random selections. Every run evaluated the full six-task suite with `lm-evaluation-harness`, without sample limits. Each record contains 19,534 task or document samples.
 
-This snapshot supports a project-progress report. It does **not** answer the confirmatory research question. The frozen `k=4` permutation study is incomplete.
+I report this comparison as exploratory. The frozen `k=4` permutation study was incomplete at the date of this snapshot. Its subsequently completed results are reported [separately](../confirmatory/RESULTS.md).
 
-Nine successful official records exist locally: all three model baselines; the five Qwen2.5-7B `k=2` records summarized here; and preliminary `k=4` BI records for the base and instruct checkpoints. Only the coherent `k=2` comparison is reported below.
+Nine successful official records were available at that date: all three model baselines; the five Qwen2.5-7B `k=2` records summarized here, including the base-model baseline; and preliminary `k=4` BI records for the base and instruct checkpoints. I restrict this snapshot to the complete `k=2` comparison.
 
 ## Exact pilot results
 
@@ -22,7 +22,7 @@ Higher is better for the five accuracy columns. Lower is better for WikiText wor
 
 BI produced lower perplexity and higher accuracy than all three random selections on four of the five accuracy tasks. One random selection exceeded BI on Winogrande. These comparisons are observations from a small exploratory sample, not significance-tested evidence that BI outperforms random selection.
 
-The random controls varied substantially despite removing the same number of blocks. Their WikiText perplexities ranged from 13.36 to 20.93; their Winogrande accuracies ranged from 0.580 to 0.696. This instability motivated replacing the original `random×3` design with the frozen 20-permutation protocol.
+The random controls varied substantially despite removing the same number of blocks. Their WikiText perplexities ranged from 13.36 to 20.93; their Winogrande accuracies ranged from 0.580 to 0.696. In response to variation observed during the pilot, I replaced the original `random×3` design with the frozen 20-permutation protocol.
 
 ## Reproducibility record
 
@@ -40,9 +40,9 @@ The baseline record uses code revision `04b1ffc9be4f68f599b1038c6a0955752e4f26d7
 
 ## Limits
 
-- The `k=2` data were inspected before the confirmatory protocol was frozen, so they remain exploratory.
+- I inspected `k=2` outcomes before freezing the confirmatory protocol, so these data remain exploratory.
 - Three random selections cannot estimate the full random-selection distribution reliably.
 - One checkpoint cannot test whether BI's predictive value depends on fine-tuning.
-- The incomplete `k=4` results are omitted to avoid selective interpretation.
+- I omitted the incomplete `k=4` results from this snapshot to avoid selective interpretation.
 
-The valid conclusion is narrow: the rebuilt pipeline completed a full-task pruning pilot, and the observed sensitivity to random layer choice justified a stronger confirmatory design. No confirmatory claim about BI is made.
+I interpret the pilot as evidence of variation between random layer selections at a fixed pruning level. It motivated additional controls but does not establish a confirmatory result for BI.

@@ -1,8 +1,10 @@
 from pathlib import Path
+import json
 
 import numpy as np
+import pytest
 
-from experiments.visualize import edge_touch_by_seed, expected_figure_paths, rank_profile
+from experiments.visualize import edge_touch_by_seed, expected_figure_paths, rank_profile, load_exported_records
 
 
 def test_expected_figure_paths_are_deterministic():
@@ -55,3 +57,15 @@ def test_rank_profile_averages_ties():
     _, ranks = rank_profile({"0": 0.1, "1": 0.1, "2": 0.2})
 
     np.testing.assert_array_equal(ranks, [1.5, 1.5, 3.0])
+
+
+def test_figures_can_load_tracked_export_without_raw_logs(tmp_path):
+    path = tmp_path / "runs.jsonl"
+    record = {"provenance": {"run_key": "base:bi:k4:seednone"},
+              "status": "succeeded", "config": {"official_run": True}}
+    path.write_text(json.dumps(record) + "\n", encoding="utf-8")
+    assert load_exported_records(path) == {"base:bi:k4:seednone": record}
+
+    path.write_text((json.dumps(record) + "\n") * 2, encoding="utf-8")
+    with pytest.raises(ValueError, match="Duplicate run key"):
+        load_exported_records(path)

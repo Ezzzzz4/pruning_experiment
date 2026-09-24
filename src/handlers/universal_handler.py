@@ -1,11 +1,4 @@
-"""
-Universal Handler - Dynamic Model Structure Discovery
-
-Automatically discovers and analyzes the layer structure of ANY neural network.
-Works with transformers, CNNs, encoder-decoder, multi-modal, and audio models.
-
-For unusual architectures (YOLO, etc.), use specialized handlers.
-"""
+"""Universal handler for discovering and pruning repeated layer groups."""
 
 import torch
 import torch.nn as nn
@@ -45,28 +38,17 @@ KNOWN_LAYER_PATTERNS = [
 
 class UniversalHandler:
     """
-    Universal handler that auto-discovers model structure.
+    Universal handler that auto-discovers repeated model structure.
     
     Works with:
-    - Standard transformers (GPT, BERT, LLaMA, Qwen, etc.)
-    - Encoder-decoder models (DETR, Whisper, T5, etc.)
-    - Multi-modal models (CLIP, SigLIP, LLaVA, etc.)
-    - Vision transformers (ViT, DeiT, etc.)
-    - Audio models (Wav2Vec2, HuBERT, etc.)
+    - Standard transformer layer lists used in this project
+    - Encoder-decoder, vision, text, and audio module lists when they expose
+      repeated layers as ``ModuleList`` or ``Sequential``
     
-    For unusual architectures, use specialized handlers:
-    - ResNetHandler: For ResNet's layer1/2/3/4 structure
-    - YOLOHandler: For YOLO's backbone/neck/head structure
-    
-    Example:
-        >>> handler = UniversalHandler(model)
-        >>> handler.discover()
-        Discovered 2 components:
-          encoder: 6 layers at 'encoder.layers'
-          decoder: 6 layers at 'decoder.layers'
-        
-        >>> results = handler.analyze(dataloader)
-        >>> print(results['encoder']['bi_scores'])
+        Example:
+        >>> handler = UniversalHandler(model, verbose=False)
+        >>> handler.list_components()
+        ['main']
     """
     
     def __init__(self, model: nn.Module, verbose: bool = True):
@@ -378,6 +360,30 @@ class UniversalHandler:
         if isinstance(current_layers, nn.ModuleList):
             return nn.ModuleList(kept_layers)
         return nn.ModuleList(kept_layers)
+
+    def _refresh_pruned_transformer_metadata(
+        self,
+        model: nn.Module,
+        layers_path: str,
+        new_layers: nn.Module,
+        kept_indices: List[int],
+    ) -> None:
+        """Keep supported transformer cache/config metadata aligned after pruning."""
+        config = getattr(model, "config", None)
+        if config is None:
+            return
+
+        if getattr(config, "model_type", None) != "qwen2" or layers_path != "model.layers":
+            return
+
+        config.num_hidden_layers = len(new_layers)
+        layer_types = getattr(config, "layer_types", None)
+        if isinstance(layer_types, list):
+            config.layer_types = [layer_types[idx] for idx in kept_indices]
+
+        for new_idx, layer in enumerate(new_layers):
+            if hasattr(layer, "self_attn") and hasattr(layer.self_attn, "layer_idx"):
+                layer.self_attn.layer_idx = new_idx
     
     def remove_layer(
         self,
@@ -415,12 +421,14 @@ class UniversalHandler:
             parent = getattr(parent, part)
         
         current_layers = getattr(parent, parts[-1])
-        new_layers = self._make_layer_container(current_layers, [
-            layer for i, layer in enumerate(current_layers)
-            if i != layer_idx
-        ])
+        kept_indices = [i for i in range(len(current_layers)) if i != layer_idx]
+        new_layers = self._make_layer_container(
+            current_layers,
+            [layer for i, layer in enumerate(current_layers) if i in kept_indices],
+        )
         
         setattr(parent, parts[-1], new_layers)
+        self._refresh_pruned_transformer_metadata(model, path, new_layers, kept_indices)
 
         if inplace:
             self.components[component].layers = new_layers
@@ -459,12 +467,14 @@ class UniversalHandler:
         
         current_layers = getattr(parent, parts[-1])
         indices_to_remove = set(layer_indices)
-        new_layers = self._make_layer_container(current_layers, [
-            layer for i, layer in enumerate(current_layers)
-            if i not in indices_to_remove
-        ])
+        kept_indices = [i for i in range(len(current_layers)) if i not in indices_to_remove]
+        new_layers = self._make_layer_container(
+            current_layers,
+            [layer for i, layer in enumerate(current_layers) if i in kept_indices],
+        )
         
         setattr(parent, parts[-1], new_layers)
+        self._refresh_pruned_transformer_metadata(model, path, new_layers, kept_indices)
         
         if inplace:
             self.components[component].layers = new_layers
@@ -478,28 +488,5 @@ class UniversalHandler:
 
 
 def create_handler(model: nn.Module, **kwargs):
-    """
-    Factory function to create appropriate handler for a model.
-    
-    Returns UniversalHandler for most models, or specialized handler
-    for unusual architectures.
-    """
-    # Check for ResNet-style
-    if all(hasattr(model, f'layer{i}') for i in [1, 2, 3, 4]):
-        from src.handlers.resnet_handler import ResNetLayerPruner
-        if kwargs.get('verbose', True):
-            print("Detected ResNet-style architecture, using ResNetLayerPruner")
-        return ResNetLayerPruner(model, **kwargs)
-    
-    # Check for YOLO-style (if ultralytics model)
-    if hasattr(model, 'model') and hasattr(model, 'predict'):
-        try:
-            from src.handlers.yolo_handler import YOLOHandler
-            if kwargs.get('verbose', True):
-                print("Detected YOLO-style architecture, using YOLOHandler")
-            return YOLOHandler(model, **kwargs)
-        except ImportError:
-            pass
-    
-    # Default: Universal handler
+    """Factory function kept for callers that expect a handler constructor."""
     return UniversalHandler(model, **kwargs)

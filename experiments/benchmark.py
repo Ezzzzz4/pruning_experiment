@@ -28,6 +28,8 @@ from urllib.parse import unquote, urlparse
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from experiments.frozen_files import require_frozen_text_hash, text_file_sha256_variants
+
 
 MODEL_REVISIONS = {
     "base": {
@@ -65,6 +67,7 @@ NON_FINITE_FLOATS = {
     "positive_infinity": math.inf,
     "negative_infinity": -math.inf,
 }
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 @dataclass(frozen=True)
@@ -90,6 +93,115 @@ class RunConfig:
     def run_key(self) -> str:
         seed = "none" if self.seed is None else str(self.seed)
         return f"{self.model_key}:{self.strategy}:k{self.k}:seed{seed}"
+
+
+def validate_official_config_against_manifest(config: RunConfig) -> None:
+    if config.protocol_manifest_path is None:
+        raise RuntimeError("Official runs require --protocol-manifest.")
+    manifest = json.loads(config.protocol_manifest_path.read_text(encoding="utf-8"))
+    protocol = load_frozen_protocol(manifest)
+    configs = manifest.get("configs")
+    if not isinstance(configs, list):
+        raise ValueError(f"Protocol manifest {config.protocol_manifest_path} has no configs list.")
+    expected_by_key = {entry.get("run_key"): entry for entry in configs}
+    expected = expected_by_key.get(config.run_key)
+    if expected is None:
+        raise ValueError(f"Official run key {config.run_key!r} is not in the protocol manifest.")
+
+    if config.limit is not None:
+        raise ValueError("Official runs must use full datasets; --limit is not allowed.")
+    if config.batch_size != "4":
+        raise ValueError("Official runs must use batch_size='4'.")
+    if config.device != "cuda":
+        raise ValueError("Official runs must explicitly use --device cuda.")
+    if config.dtype not in {"float16", "fp16"}:
+        raise ValueError("Official runs must explicitly use --dtype float16.")
+    for field in ("model_key", "strategy", "k", "seed"):
+        if getattr(config, field) != expected.get(field):
+            raise ValueError(
+                f"Official config field {field}={getattr(config, field)!r} "
+                f"does not match manifest value {expected.get(field)!r}."
+            )
+    model_info = MODEL_REVISIONS[config.model_key]
+    if model_info["model_id"] != expected["model_id"] or model_info["revision"] != expected["revision"]:
+        raise ValueError("Pinned model mapping does not match the protocol manifest.")
+    model_protocol = protocol.get("models", {}).get(config.model_key)
+    if not isinstance(model_protocol, dict):
+        raise ValueError(f"Frozen protocol lacks model entry for {config.model_key}.")
+    if (
+        model_protocol.get("model_id") != expected["model_id"]
+        or model_protocol.get("revision") != expected["revision"]
+    ):
+        raise ValueError("Frozen protocol model mapping does not match the manifest.")
+    validate_official_frozen_inputs(config, protocol, expected)
+    if list(config.tasks) != expected["tasks"]:
+        raise ValueError("Official task list must exactly match the protocol manifest.")
+
+    expected_indices = expected.get("removed_indices")
+    if expected_indices is None:
+        if config.removed_indices is not None:
+            raise ValueError("Official fixed removed indices are only valid when listed in manifest.")
+    elif list(config.removed_indices or ()) != expected_indices:
+        raise ValueError("Official removed indices must exactly match the protocol manifest.")
+
+    expected_selection_source = expected.get("selection_source")
+    if expected_selection_source is None:
+        if config.selection_source is not None:
+            raise ValueError("Official selection_source is only valid when listed in manifest.")
+    elif config.selection_source != expected_selection_source:
+        raise ValueError("Official selection_source must exactly match the protocol manifest.")
+
+
+def resolve_repo_path(path_value: str | Path) -> Path:
+    path = Path(str(path_value).replace("\\", "/"))
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
+def load_frozen_protocol(manifest: dict[str, Any]) -> dict[str, Any]:
+    protocol_path = manifest.get("protocol_path")
+    if not isinstance(protocol_path, str):
+        raise ValueError("Protocol manifest does not declare protocol_path.")
+    return json.loads(resolve_repo_path(protocol_path).read_text(encoding="utf-8"))
+
+
+def validate_official_frozen_inputs(
+    config: RunConfig,
+    protocol: dict[str, Any],
+    expected: dict[str, Any],
+) -> None:
+    model_protocol = protocol["models"][config.model_key]
+    if config.bi_scores_path is None:
+        raise ValueError("Official runs require --bi-scores; BI bundles are frozen inputs.")
+    if not config.bi_scores_path.is_file():
+        raise ValueError(f"Official BI bundle is missing: {config.bi_scores_path}.")
+    require_frozen_text_hash(config.bi_scores_path, model_protocol["bi_sha256"])
+
+    calibration = protocol.get("calibration", {})
+    expected_calibration_path = resolve_repo_path(calibration.get("path", ""))
+    if config.calibration_path is None:
+        raise ValueError("Official runs require --calibration-jsonl.")
+    if config.calibration_path.resolve() != expected_calibration_path.resolve():
+        raise ValueError("Official calibration path must match the frozen protocol.")
+    require_frozen_text_hash(config.calibration_path, calibration["sha256"])
+
+    if config.strategy == "bi":
+        expected_bi = frozen_bi_indices_for_config(config, model_protocol)
+        if "removed_indices" in expected and expected["removed_indices"] != expected_bi:
+            raise ValueError("Manifest BI removed indices do not match the frozen protocol.")
+
+
+def frozen_bi_indices_for_config(config: RunConfig, model_protocol: dict[str, Any]) -> list[int]:
+    indices = model_protocol.get("bi_indices", {}).get(str(config.k))
+    if isinstance(indices, list):
+        return indices
+    if config.run_key == "base:bi:k2:seednone":
+        bundle = json.loads(config.bi_scores_path.read_text(encoding="utf-8"))
+        scores = bundle.get("canonical")
+        if not isinstance(scores, dict):
+            raise ValueError("Pre-manifest BI bundle lacks canonical scores.")
+        selected = sorted(scores, key=lambda index: (float(scores[index]), int(index)))[: config.k]
+        return sorted(int(index) for index in selected)
+    raise ValueError(f"Frozen protocol lacks BI indices for {config.model_key} k={config.k}.")
 
 
 def utc_now() -> str:
@@ -379,8 +491,7 @@ def load_or_compute_bi_bundle(
                 f"loaded model revision {actual_revision!r}."
             )
         if calibration_path is not None:
-            actual_calibration_sha = file_sha256(calibration_path)
-            if bundle.get("calibration_sha256") != actual_calibration_sha:
+            if bundle.get("calibration_sha256") not in text_file_sha256_variants(calibration_path):
                 raise RuntimeError("BI bundle calibration hash does not match --calibration-jsonl.")
         expected_indices = {str(idx) for idx in range(len(modules))}
         for mode in ("canonical", "legacy"):
@@ -801,6 +912,9 @@ def base_provenance(config: RunConfig, device: str) -> dict[str, Any]:
 
 
 def run_configuration(config: RunConfig, run_id: str | None = None) -> dict[str, Any]:
+    if config.official_run:
+        validate_official_config_against_manifest(config)
+
     if config.official_run:
         enforce_clean_worktree()
         enforce_harness_revision()

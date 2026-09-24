@@ -1,23 +1,7 @@
-# STEM activity brief
+# Abstract
 
-## Project in one sentence
+I evaluated whether Block Influence (BI), introduced in ShortGPT, selects transformer blocks whose removal causes less performance degradation than random selection. The study compared three existing Qwen2.5-7B checkpoints on one laptop GPU using a pinned evaluation harness. After withdrawing conclusions from an earlier implementation, I conducted an exploratory two-layer pilot. WikiText perplexity ranged from 13.36 to 20.93 across its random selections. I subsequently fixed twenty new random layer-label permutations and the analysis rules before evaluating the primary four-layer comparison. The completed grid contains 133 configurations, including exploratory and secondary analyses.
 
-I built and audited a reproducible experiment to test whether Block Influence, a transformer-layer pruning metric, selects removable layers more reliably than random selection and whether fine-tuning changes that reliability.
+At four removed layers, BI produced lower WikiText perplexity than all twenty random controls on each checkpoint. The Monte Carlo rank p-value was 0.0476 under the specified layer-label exchangeability null. BI also produced lower perplexity than all eight edge-free controls; the corresponding diagnostic p-value was 0.111. I interpret these findings within the evaluated models and sampled selections. The design does not establish superiority over a depth-matched pruning heuristic or a causal effect of fine-tuning.
 
-## What I did
-
-I began with a pruning repository whose documentation overstated what its code and old benchmarks could support. I treated two independent audits as engineering requirements, withdrew the old conclusions, archived the earlier evidence, and rebuilt the experiment around fixed model and evaluation revisions.
-
-The rebuilt pipeline loads 7-billion-parameter Qwen2.5 checkpoints on one laptop GPU, removes specified transformer blocks, evaluates six public language tasks through `lm-evaluation-harness`, logs per-example outputs, and records model, code, dependency, timing, and hardware provenance. I also implemented two Block Influence calculations so the current token-masked FP32 definition could be compared with the legacy FP16 calculation.
-
-The first complete pilot compared an unpruned Qwen2.5-7B model with BI pruning and three random layer selections at two removed blocks. All five configurations covered 19,534 samples. The random selections produced WikiText perplexities from 13.36 to 20.93, showing that the choice of random layers created more variation than a three-seed control could characterize reliably.
-
-## What changed because of the evidence
-
-Instead of presenting the most favorable pilot comparison, I labeled the data exploratory and redesigned the confirmatory study before collecting its primary results. The new public protocol freezes twenty conditional random permutations, exact layer indices, model revisions, metric directions, failure rules, and analysis rules. This makes a negative result—BI being indistinguishable from random selection—as reportable as a positive one.
-
-## Current result and limit
-
-The `k=4` confirmatory run is now complete. On the primary WikiText endpoint, BI ranked better than all twenty frozen conditional random permutations across the three checkpoints, giving the smallest possible exact p-value for this design: `1/21 = 0.047619`. The rank-based robustness analysis gives the same result. A predeclared edge-layer diagnostic is more cautious: BI also beats every edge-free control, but only eight controls avoided edge layers, so that secondary p-value is `1/9 = 0.111111`.
-
-The result supports a narrow claim: in this fixed conditional permutation family, BI selected less damaging `k=4` layer removals than the tested random controls. It does not prove that BI always beats random pruning, and it cannot make a causal claim about fine-tuning because there is only one base, instruction-tuned, and math-tuned checkpoint. The project demonstrates experimental design, GPU systems debugging, statistical reasoning, reproducibility, and the discipline to state a claim only as strongly as the test allows.
+Methods, results, and supporting materials are listed in the [research summary](../../PROJECT_CARD.md).
